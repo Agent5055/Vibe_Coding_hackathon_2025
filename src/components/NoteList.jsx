@@ -97,7 +97,7 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}>
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
@@ -107,7 +107,8 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                 placeholder="Search notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
               />
               <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -120,7 +121,8 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="px-3 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
             >
               <option value="updatedAt">Last Updated</option>
               <option value="createdAt">Created Date</option>
@@ -128,7 +130,8 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
             </select>
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700"
+              className="px-3 py-3 rounded-lg hover:opacity-80 focus:ring-2 focus:ring-primary-500"
+              style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
             >
               {sortOrder === 'asc' ? '↑' : '↓'}
             </button>
@@ -169,15 +172,15 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
       <div className="space-y-4">
         {filteredNotes.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)' }}>
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-secondary)' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               {notes.length === 0 ? 'No notes yet' : 'No notes match your search'}
             </h3>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p style={{ color: 'var(--text-secondary)' }}>
               {notes.length === 0 
                 ? 'Create your first note to get started' 
                 : 'Try adjusting your search or filters'
@@ -188,11 +191,12 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
           filteredNotes.map(note => (
             <div
               key={note.id}
-              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 cursor-pointer group"
+              className="rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
+              style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}
               onClick={() => onView(note)}
             >
               <div className="flex justify-between items-start mb-3">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200">
+                <h3 className="text-lg font-semibold group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                   {note.title || 'Untitled'}
                 </h3>
                 <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -221,7 +225,7 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                 </div>
               </div>
 
-              <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+              <p className="mb-4 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>
                 {note.body || 'No content'}
               </p>
 
@@ -242,7 +246,7 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                   )}
                 </div>
 
-                <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex items-center space-x-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <span>{formatDate(note.updatedAt)}</span>
                   {note.keywords && note.keywords.length > 0 && (
                     <span className="flex items-center space-x-1">

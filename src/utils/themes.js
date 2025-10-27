@@ -41,14 +41,14 @@ export const THEMES = [
     borderClass: 'border-gray-700'
   },
   { 
-    id: 'purple', 
-    name: 'Deep Purple', 
+    id: 'midnight', 
+    name: 'Midnight Blue', 
     icon: 'moon', 
-    color: 'purple',
-    bgClass: 'bg-purple-950',
-    cardClass: 'bg-purple-900',
-    textClass: 'text-purple-100',
-    borderClass: 'border-purple-800'
+    color: 'blue',
+    bgClass: 'bg-blue-950',
+    cardClass: 'bg-blue-900',
+    textClass: 'text-blue-100',
+    borderClass: 'border-blue-800'
   },
   { 
     id: 'pitch', 
@@ -81,7 +81,7 @@ export const applyTheme = (themeId) => {
   // Remove all theme classes
   document.documentElement.classList.remove(
     'theme-light', 'theme-sky', 'theme-rose', 
-    'theme-dark', 'theme-purple', 'theme-pitch'
+    'theme-dark', 'theme-midnight', 'theme-pitch'
   );
   
   // Add current theme class

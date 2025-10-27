@@ -115,16 +115,16 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+        <div className="p-6" style={{ borderBottom: `1px solid var(--border-color)` }}>
+          <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
             {note ? 'Edit Note' : 'Create New Note'}
           </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Title
             </label>
             <input
@@ -134,13 +134,14 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
               value={formData.title}
               onChange={handleInputChange}
               placeholder="Enter note title..."
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-200"
+              className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
               autoFocus
             />
           </div>
 
           <div>
-            <label htmlFor="body" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="body" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Content
             </label>
             <textarea
@@ -150,12 +151,13 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
               onChange={handleInputChange}
               placeholder="Write your thoughts here..."
               rows={8}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none transition-all duration-200"
+              className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none transition-all duration-200"
+              style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Tags
             </label>
             <div className="flex flex-wrap gap-2 mb-3">
@@ -184,18 +186,20 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
                     onChange={handleTagInputChange}
                     onFocus={() => setShowTagSuggestions(tagInput.length > 0)}
                     placeholder="Add a tag..."
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
                   />
                   
                   {/* Tag Suggestions Dropdown */}
                   {showTagSuggestions && filteredSuggestions.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 rounded-lg shadow-lg max-h-40 overflow-y-auto" style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}>
                       {filteredSuggestions.slice(0, 5).map((tag, index) => (
                         <button
                           key={index}
                           type="button"
                           onClick={() => handleSelectExistingTag(tag)}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                          className="w-full px-3 py-2 text-left hover:opacity-80"
+                          style={{ color: 'var(--text-primary)' }}
                         >
                           {tag}
                         </button>
@@ -213,11 +217,12 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end space-x-3 pt-4" style={{ borderTop: `1px solid var(--border-color)` }}>
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors duration-200"
+              className="px-6 py-2 hover:opacity-80 transition-colors duration-200"
+              style={{ color: 'var(--text-secondary)' }}
             >
               Cancel
             </button>
