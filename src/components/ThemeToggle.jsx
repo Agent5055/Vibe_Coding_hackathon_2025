@@ -22,9 +22,8 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={cycleTheme}
-      className="p-2 rounded-lg bg-white/10 dark:bg-gray-800/50 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white/20 dark:hover:bg-gray-700/50 transition-all duration-200 group"
+      className="p-2 rounded-lg bg-white/10 dark:bg-gray-800/50 backdrop-blur-sm border border-white/20 dark:border-gray-700/50 hover:bg-white/20 dark:hover:bg-gray-700/50 transition-all duration-200"
       aria-label={`Switch to ${currentTheme.name}`}
-      title={`Current: ${currentTheme.name} - Click to cycle themes`}
     >
       {(() => {
         const iconData = getThemeIconData(currentTheme);
@@ -34,11 +33,6 @@ const ThemeToggle = () => {
           </svg>
         );
       })()}
-      
-      {/* Theme name tooltip */}
-      <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-        {currentTheme.name}
-      </div>
     </button>
   );
 };

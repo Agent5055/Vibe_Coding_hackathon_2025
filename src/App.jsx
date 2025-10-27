@@ -120,16 +120,16 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen" style={{ background: `linear-gradient(to bottom right, var(--bg-primary), var(--bg-secondary))` }}>
       {/* Header */}
-      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+      <header className="backdrop-blur-sm sticky top-0 z-40" style={{ backgroundColor: 'var(--bg-secondary)', opacity: 0.95, borderBottom: `1px solid var(--border-color)` }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 ThoughtWeaver
               </h1>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                 Smart Learning Tracker
               </span>
             </div>
@@ -152,7 +152,7 @@ function App() {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+      <nav className="backdrop-blur-sm" style={{ backgroundColor: 'var(--bg-secondary)', opacity: 0.8, borderBottom: `1px solid var(--border-color)` }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             {views.map((view) => (
@@ -161,9 +161,10 @@ function App() {
                 onClick={() => setActiveView(view.id)}
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
                   activeView === view.id
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent hover:border-gray-300'
                 }`}
+                style={{ color: activeView === view.id ? undefined : 'var(--text-secondary)' }}
               >
                 <span className="mr-2">{view.icon}</span>
                 {view.name}
@@ -202,15 +203,16 @@ function App() {
 
       {/* Selected Note Sidebar */}
       {selectedNote && activeView === 'mindmap' && (
-        <div className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-800 shadow-2xl border-l border-gray-200 dark:border-gray-700 z-50 overflow-y-auto">
+        <div className="fixed right-0 top-0 h-full w-96 shadow-2xl z-50 overflow-y-auto" style={{ backgroundColor: 'var(--bg-secondary)', borderLeft: `1px solid var(--border-color)` }}>
           <div className="p-6">
             <div className="flex justify-between items-start mb-4">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 {selectedNote.title || 'Untitled'}
               </h2>
               <button
                 onClick={() => setSelectedNote(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                className="p-2 transition-colors duration-200"
+                style={{ color: 'var(--text-secondary)' }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -220,20 +222,20 @@ function App() {
 
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content</h3>
-                <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">
+                <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Content</h3>
+                <p className="whitespace-pre-wrap" style={{ color: 'var(--text-secondary)' }}>
                   {selectedNote.body || 'No content'}
                 </p>
               </div>
 
               {selectedNote.tags && selectedNote.tags.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags</h3>
+                  <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Tags</h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedNote.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 text-sm rounded-full"
+                        className="px-2 py-1 bg-primary-100 text-primary-700 text-sm rounded-full"
                       >
                         {tag}
                       </span>
@@ -244,12 +246,13 @@ function App() {
 
               {selectedNote.keywords && selectedNote.keywords.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Keywords</h3>
+                  <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Keywords</h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedNote.keywords.map((keyword, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-full"
+                        className="px-2 py-1 text-sm rounded-full"
+                        style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
                       >
                         {keyword}
                       </span>
@@ -258,7 +261,7 @@ function App() {
                 </div>
               )}
 
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="pt-4" style={{ borderTop: `1px solid var(--border-color)` }}>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEditNote(selectedNote)}

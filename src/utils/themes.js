@@ -93,9 +93,20 @@ export const applyTheme = (themeId) => {
 
 // Get theme icon data
 export const getThemeIconData = (theme) => {
+  // Map theme colors to explicit Tailwind classes
+  const colorClassMap = {
+    'orange': 'w-5 h-5 text-orange-500',
+    'blue': 'w-5 h-5 text-blue-500',
+    'pink': 'w-5 h-5 text-pink-500',
+    'yellow': 'w-5 h-5 text-yellow-500',
+    'purple': 'w-5 h-5 text-purple-500'
+  };
+  
+  const className = colorClassMap[theme.color] || 'w-5 h-5 text-gray-500';
+  
   if (theme.icon === 'sun') {
     return {
-      className: `w-5 h-5 text-${theme.color}-500`,
+      className,
       fill: 'currentColor',
       viewBox: '0 0 20 20',
       path: {
@@ -105,7 +116,7 @@ export const getThemeIconData = (theme) => {
     };
   } else {
     return {
-      className: `w-5 h-5 text-${theme.color}-500`,
+      className,
       fill: 'currentColor',
       viewBox: '0 0 20 20',
       path: {
