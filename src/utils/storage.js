@@ -58,6 +58,7 @@ const enhanceNote = (note) => {
   const body = note.body || '';
   return {
     ...note,
+    isPinned: note.isPinned ?? false,
     lastOpened: note.lastOpened || note.updatedAt || note.createdAt,
     versions: note.versions || [],
     wordCount: note.wordCount || calculateWordCount(body),
@@ -145,28 +146,36 @@ export const storage = {
   // Update an existing note (with version history)
   updateNote: async (id, updates) => {
     try {
+      // Check if we're only updating lastOpened (shouldn't trigger updatedAt change)
+      const isOnlyLastOpenedUpdate = Object.keys(updates).length === 1 && 'lastOpened' in updates;
+      
       if (useIndexedDB) {
         const existingNote = await indexedDBWrapper.getNote(id);
         if (!existingNote) return null;
 
-        // Save current version before updating
-        await storage.saveVersion(id, {
-          title: existingNote.title,
-          body: existingNote.body,
-          tags: existingNote.tags,
-          keywords: existingNote.keywords
-        });
+        // Save current version before updating (but not for lastOpened-only updates)
+        if (!isOnlyLastOpenedUpdate) {
+          await storage.saveVersion(id, {
+            title: existingNote.title,
+            body: existingNote.body,
+            tags: existingNote.tags,
+            keywords: existingNote.keywords
+          });
+        }
 
         const updatedNote = enhanceNote({
           ...existingNote,
           ...updates,
-          updatedAt: new Date().toISOString(),
+          // Only update updatedAt if we're changing actual content, not just lastOpened
+          ...(isOnlyLastOpenedUpdate ? {} : { updatedAt: new Date().toISOString() }),
         });
 
         await indexedDBWrapper.saveNote(updatedNote);
         
         // Clean up old versions (keep only last 5)
-        await indexedDBWrapper.deleteOldVersions(id, 5);
+        if (!isOnlyLastOpenedUpdate) {
+          await indexedDBWrapper.deleteOldVersions(id, 5);
+        }
         
         return updatedNote;
       } else {
@@ -175,25 +184,30 @@ export const storage = {
         
         if (noteIndex === -1) return null;
 
-        // Save version in note's versions array
+        // Save version in note's versions array (but not for lastOpened-only updates)
         const existingNote = notes[noteIndex];
-        const versions = existingNote.versions || [];
-        versions.push({
-          title: existingNote.title,
-          body: existingNote.body,
-          tags: existingNote.tags,
-          keywords: existingNote.keywords,
-          timestamp: new Date().toISOString()
-        });
+        let limitedVersions = existingNote.versions || [];
+        
+        if (!isOnlyLastOpenedUpdate) {
+          const versions = [...limitedVersions];
+          versions.push({
+            title: existingNote.title,
+            body: existingNote.body,
+            tags: existingNote.tags,
+            keywords: existingNote.keywords,
+            timestamp: new Date().toISOString()
+          });
 
-        // Keep only last 5 versions
-        const limitedVersions = versions.slice(-5);
+          // Keep only last 5 versions
+          limitedVersions = versions.slice(-5);
+        }
 
         notes[noteIndex] = enhanceNote({
           ...existingNote,
           ...updates,
           versions: limitedVersions,
-          updatedAt: new Date().toISOString(),
+          // Only update updatedAt if we're changing actual content, not just lastOpened
+          ...(isOnlyLastOpenedUpdate ? {} : { updatedAt: new Date().toISOString() }),
         });
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));

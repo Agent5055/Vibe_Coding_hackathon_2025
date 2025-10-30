@@ -231,25 +231,45 @@ ThoughtWeaver comes with **one built-in theme** that cannot be deleted:
 
 ## Importable Themes
 
-ThoughtWeaver includes **7 additional themes** ready to import from the `themes/` folder:
+ThoughtWeaver includes **7 additional themes** ready to import from the `themes/` folder. All imported themes **automatically apply in dark mode first**. Use the theme toggle button in the header to switch between light and dark variants.
 
-2. **Sky** - Blue tones
-   - `sky-light`: Light blue and white
-   - `sky-dark`: Deep midnight blue
+### How to Import Themes
 
-3. **Rose** - Pink tones
-   - `rose-light`: Soft rose pink
-   - `rose-dark`: Deep rose crimson
+1. Open ThoughtWeaver
+2. Go to **Settings** → **Theme Management**
+3. Click **Import Theme**
+4. Select any `.json` file from the `themes/` folder
+5. The theme will automatically apply in **dark mode** and appear in your themes list
 
-4. **Forest Green** - Nature-inspired green
-5. **Sunset Orange** - Warm and vibrant
-6. **Purple Haze** - Creative and artistic
-7. **Ocean Deep** - Ocean-inspired blues
-8. **Mocha** - Coffee-inspired browns
+### Available Theme Files
 
-All imported themes **automatically apply in dark mode first**. Use the theme toggle button in the header to switch between light and dark variants.
+1. **sky-theme.json** - Sky Blue theme
+   - Light: Light blue and white
+   - Dark: Deep midnight blue
 
-See `themes/themes.md` for full catalog with screenshots and descriptions.
+2. **rose-theme.json** - Rose Pink theme
+   - Light: Soft rose pink
+   - Dark: Deep rose crimson
+
+3. **forest-green.json** - Forest Green theme
+   - Light: Fresh nature-inspired greens
+   - Dark: Deep forest tones
+
+4. **sunset-orange.json** - Sunset Orange theme
+   - Light: Warm cream and orange
+   - Dark: Rich sunset browns
+
+5. **purple-haze.json** - Purple Haze theme
+   - Light: Soft lavender
+   - Dark: Deep purple
+
+6. **ocean-deep.json** - Ocean Deep theme
+   - Light: Light cyan and turquoise
+   - Dark: Deep ocean blue
+
+7. **mocha.json** - Mocha theme
+   - Light: Warm beige and cream
+   - Dark: Rich coffee browns
 
 ## Advanced: CSS Customization
 

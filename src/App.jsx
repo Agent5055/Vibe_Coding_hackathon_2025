@@ -178,16 +178,30 @@ function App() {
       setIsFormOpen(true);
       await storage.updateLastOpened(existingNote.id);
     } else {
-      // Create new daily note with template
-      const newNote = {
+      // Create new daily note immediately with template content
+      const newNoteData = {
         title,
         body: `<h1>Daily Note - ${dateStr}</h1>\n<h2>Tasks</h2>\n<ul data-type="taskList">\n  <li data-type="taskItem" data-checked="false"><label><input type="checkbox"><span></span></label><div><p>Add your tasks here...</p></div></li>\n</ul>\n<h2>Notes</h2>\n<p>Write your thoughts and reflections for today...</p>`,
         tags: ['daily'],
         isPinned: false
       };
       
-      setEditingNote(newNote);
-      setIsFormOpen(true);
+      // Actually create the note in storage
+      const createdNote = await storage.addNote(newNoteData);
+      
+      if (createdNote) {
+        // Extract keywords for the new note
+        const keywords = extractNoteKeywords(createdNote);
+        const updatedNote = await storage.updateNote(createdNote.id, { keywords });
+        
+        // Reload notes to include the new one
+        const updatedNotes = await storage.getAllNotes();
+        setNotes(updatedNotes);
+        
+        // Now open it for editing
+        setEditingNote(updatedNote);
+        setIsFormOpen(true);
+      }
     }
   };
 
@@ -216,7 +230,8 @@ function App() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleDailyNote}
-                className="px-3 py-2 bg-secondary-100 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 rounded-lg hover:bg-secondary-200 dark:hover:bg-secondary-700 transition-colors duration-200 flex items-center space-x-2"
+                className="px-3 py-2 rounded-lg hover:opacity-80 transition-all duration-200 flex items-center space-x-2"
+                style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
                 title="Open or create today's daily note"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

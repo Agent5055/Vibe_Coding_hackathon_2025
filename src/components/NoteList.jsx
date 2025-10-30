@@ -422,9 +422,16 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                   onClick={() => onView(note)}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-sm font-semibold line-clamp-2 group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
-                      {note.title || 'Untitled'}
-                    </h3>
+                    <div className="flex items-center gap-1 flex-1 min-w-0">
+                      {note.isPinned && (
+                        <span className="text-yellow-500 text-xs flex-shrink-0" title="Pinned">
+                          📌
+                        </span>
+                      )}
+                      <h3 className="text-sm font-semibold line-clamp-2 group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
+                        {note.title || 'Untitled'}
+                      </h3>
+                    </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 ml-2">
                       <button
                         onClick={(e) => {
@@ -480,9 +487,16 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                   onClick={() => onView(note)}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-base font-semibold line-clamp-1 group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
-                      {note.title || 'Untitled'}
-                    </h3>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {note.isPinned && (
+                        <span className="text-yellow-500 flex-shrink-0" title="Pinned">
+                          📌
+                        </span>
+                      )}
+                      <h3 className="text-base font-semibold line-clamp-1 group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
+                        {note.title || 'Untitled'}
+                      </h3>
+                    </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <button
                         onClick={(e) => {
@@ -553,9 +567,16 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
               onClick={() => onView(note)}
             >
               <div className="flex justify-between items-start mb-3">
-                <h3 className="text-lg font-semibold group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
-                  {note.title || 'Untitled'}
-                </h3>
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  {note.isPinned && (
+                    <span className="text-yellow-500 flex-shrink-0" title="Pinned">
+                      📌
+                    </span>
+                  )}
+                  <h3 className="text-lg font-semibold group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
+                    {note.title || 'Untitled'}
+                  </h3>
+                </div>
                 <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
                     onClick={(e) => {
