@@ -30,9 +30,17 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
     setTagInput('');
     
     // Load available tags from all notes
-    const allNotes = storage.getAllNotes();
-    const allTags = [...new Set(allNotes.flatMap(note => note.tags || []))];
-    setAvailableTags(allTags);
+    const loadTags = async () => {
+      try {
+        const allNotes = await storage.getAllNotes();
+        const allTags = [...new Set(allNotes.flatMap(note => note.tags || []))];
+        setAvailableTags(allTags);
+      } catch (error) {
+        console.error('Error loading tags:', error);
+        setAvailableTags([]);
+      }
+    };
+    loadTags();
   }, [note, isOpen]);
 
   const handleInputChange = (e) => {
