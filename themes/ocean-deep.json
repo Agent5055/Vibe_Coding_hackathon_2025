@@ -1,11 +1,12 @@
-{
-  "id": "ocean-deep",
-  "name": "Ocean Deep",
-  "icon": "moon",
-  "color": "blue",
-  "bgClass": "bg-cyan-950",
-  "cardClass": "bg-cyan-900",
-  "textClass": "text-cyan-100",
-  "borderClass": "border-cyan-800"
-}
-
+[
+  {
+    "id": "ocean-light",
+    "name": "Ocean Deep Light",
+    "color": "blue"
+  },
+  {
+    "id": "ocean-dark",
+    "name": "Ocean Deep Dark",
+    "color": "blue"
+  }
+]

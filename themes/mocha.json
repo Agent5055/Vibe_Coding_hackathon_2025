@@ -1,11 +1,12 @@
-{
-  "id": "mocha",
-  "name": "Mocha",
-  "icon": "moon",
-  "color": "orange",
-  "bgClass": "bg-amber-950",
-  "cardClass": "bg-stone-900",
-  "textClass": "text-amber-100",
-  "borderClass": "border-stone-800"
-}
-
+[
+  {
+    "id": "mocha-light",
+    "name": "Mocha Light",
+    "color": "orange"
+  },
+  {
+    "id": "mocha-dark",
+    "name": "Mocha Dark",
+    "color": "orange"
+  }
+]

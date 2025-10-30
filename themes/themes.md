@@ -1,149 +1,89 @@
-# ThoughtWeaver Extra Themes
+# ThoughtWeaver Theme Collection
 
-Collection of additional theme presets for ThoughtWeaver. Import these themes to customize your note-taking experience!
+This folder contains ready-to-import theme files for ThoughtWeaver. Each theme includes both light and dark variants.
 
-## 📦 Available Themes
+📖 **For comprehensive theme documentation and creation guide, see: [THEMES.md](../THEMES.md)**
 
-### 🌲 Forest Green
-A calm, nature-inspired theme with soft green tones.
-- **File**: [forest-green.json](./forest-green.json)
-- **Style**: Light
-- **Mood**: Natural, Calming, Focused
+## 🎨 Available Themes
 
-### 🌅 Sunset Orange
-Warm and vibrant orange theme reminiscent of golden hour.
-- **File**: [sunset-orange.json](./sunset-orange.json)
-- **Style**: Light
-- **Mood**: Warm, Energetic, Creative
+### Default Themes (Built-in, can be exported)
+1. **Classic** - Traditional gray tones
+   - File: `classic-theme.json`
+   - Light: Clean and professional
+   - Dark: Comfortable slate gray
 
-### 💜 Purple Haze
-Artistic and creative purple theme for inspired thinking.
-- **File**: [purple-haze.json](./purple-haze.json)
-- **Style**: Light
-- **Mood**: Creative, Artistic, Imaginative
+2. **Sky Blue** - Blue tones
+   - File: `sky-theme.json`
+   - Light: Light blue and white
+   - Dark: Deep midnight blue
 
-### 🌊 Ocean Deep
-Deep cyan/teal dark theme inspired by ocean depths.
-- **File**: [ocean-deep.json](./ocean-deep.json)
-- **Style**: Dark
-- **Mood**: Deep, Mysterious, Contemplative
+3. **Rose Pink** - Pink tones
+   - File: `rose-theme.json`
+   - Light: Soft rose pink
+   - Dark: Deep rose crimson
 
-### ☕ Mocha
-Rich, warm coffee-inspired dark theme.
-- **File**: [mocha.json](./mocha.json)
-- **Style**: Dark
-- **Mood**: Cozy, Warm, Comfortable
+### Extra Themes (Ready to import)
+4. **Forest Green** - Nature-inspired green
+   - File: `forest-green.json`
+   - Light: Soft green and white
+   - Dark: Deep forest green
 
-## 📸 Screenshots
+5. **Sunset Orange** - Warm orange tones
+   - File: `sunset-orange.json`
+   - Light: Warm golden orange
+   - Dark: Deep sunset amber
 
-_Screenshots coming soon!_
+6. **Purple Haze** - Creative purple
+   - File: `purple-haze.json`
+   - Light: Soft lavender
+   - Dark: Deep royal purple
 
-<!-- Add screenshots here:
-### Forest Green
-![Forest Green Theme](./screenshots/forest-green.png)
+7. **Ocean Deep** - Ocean-inspired cyan/blue
+   - File: `ocean-deep.json`
+   - Light: Light cyan
+   - Dark: Deep ocean blue
 
-### Sunset Orange
-![Sunset Orange Theme](./screenshots/sunset-orange.png)
+8. **Mocha** - Coffee-inspired browns
+   - File: `mocha.json`
+   - Light: Cream and amber
+   - Dark: Rich coffee brown
 
-### Purple Haze
-![Purple Haze Theme](./screenshots/purple-haze.png)
+## 📥 How to Import
 
-### Ocean Deep
-![Ocean Deep Theme](./screenshots/ocean-deep.png)
+1. Open ThoughtWeaver
+2. Go to **Settings** (⚙️)
+3. Scroll to **Theme Management**
+4. Click **Import Theme**
+5. Select a theme JSON file from this folder
+6. Click **Apply** to use the theme
+7. Use the header button to toggle between light/dark modes
 
-### Mocha
-![Mocha Theme](./screenshots/mocha.png)
--->
+## 🎯 Theme System
 
-## 🎨 How to Import a Theme
+- **Base Theme Selection**: Choose your theme in Settings
+- **Light/Dark Toggle**: Header button switches between modes
+- Each theme has 2 variants (light + dark)
+- All themes adapt to your preference seamlessly
 
-1. **Open ThoughtWeaver** in your browser
-2. **Navigate to Settings** (⚙️ icon)
-3. **Scroll to "Theme Management"** section
-4. **Click "Import Theme"** button
-5. **Select** one of the JSON files from this folder
-6. **Confirm** the import
-7. **Switch themes** using the theme toggle in the header
+## 🔧 Create Your Own
 
-## 🔧 How to Create Your Own Theme
+Want to create custom themes? Check out the main [THEMES.md](../THEMES.md) guide for:
+- Theme structure and format
+- CSS variable reference
+- Step-by-step creation guide
+- Best practices and tips
+- Example templates
 
-Themes are simple JSON files with the following structure:
+## 📤 Exporting Themes
 
-```json
-{
-  "id": "your-theme-id",
-  "name": "Your Theme Name",
-  "icon": "sun",
-  "color": "blue",
-  "bgClass": "bg-blue-50",
-  "cardClass": "bg-white",
-  "textClass": "text-gray-900",
-  "borderClass": "border-blue-200"
-}
-```
+To share themes with others:
+1. Apply your custom theme
+2. Go to Settings → Theme Management
+3. Click "Export Current Theme"
+4. Share the JSON file!
 
-### Field Descriptions:
-
-- **id**: Unique identifier (lowercase, no spaces)
-- **name**: Display name shown in theme selector
-- **icon**: Either `"sun"` (light themes) or `"moon"` (dark themes)
-- **color**: Icon color (`"orange"`, `"blue"`, `"pink"`, `"yellow"`, `"purple"`, `"green"`)
-- **bgClass**: Tailwind class for main background
-- **cardClass**: Tailwind class for card backgrounds
-- **textClass**: Tailwind class for primary text
-- **borderClass**: Tailwind class for borders
-
-### Tips for Creating Themes:
-
-1. **Light Themes**: Use `"sun"` icon and light color values (50-100 range)
-2. **Dark Themes**: Use `"moon"` icon and dark color values (900-950 range)
-3. **Contrast**: Ensure good readability between text and background
-4. **Consistency**: Use colors from the same family for cohesion
-5. **Test**: Import and preview your theme before sharing
-
-## 📤 Sharing Your Themes
-
-Created an amazing theme? Share it with the community!
-
-1. Export your theme using the "Export Theme" button
-2. Save the JSON file with a descriptive name
-3. Add a screenshot (optional but recommended)
-4. Submit a pull request to the repository
-
-## 🎯 Built-in Themes
-
-ThoughtWeaver comes with 6 built-in themes:
-
-- **Classic Light** - Clean, traditional light theme
-- **Sky Blue** - Soft blue light theme
-- **Rose Pink** - Gentle pink light theme
-- **Slate Dark** - Modern dark theme
-- **Midnight Blue** - Deep blue dark theme
-- **Pitch Black** - True black dark theme
-
-## 🛠️ CSS Variables
-
-Each theme modifies these CSS variables:
-
-- `--bg-primary`: Main background color
-- `--bg-secondary`: Secondary background (cards, panels)
-- `--text-primary`: Primary text color
-- `--text-secondary`: Secondary text color (muted)
-- `--border-color`: Border and divider color
-- `--primary-500`: Accent color for buttons and highlights
-
-## 🔒 Privacy
-
-All themes are stored locally in your browser's localStorage. No data is sent to any server.
-
-## 📝 Notes
-
-- Themes are compatible with both Compact and Cozy layout modes
-- The app automatically adapts to your system's color scheme preference
-- You can switch themes at any time without losing your notes
-- Custom imported themes persist across sessions
+**Note**: Default themes (Classic, Sky, Rose) can only be exported for reference. Custom imported themes can be freely exported and shared.
 
 ---
 
-**Enjoy customizing your ThoughtWeaver experience!** 🎨✨
-
+Happy theming! 🎨

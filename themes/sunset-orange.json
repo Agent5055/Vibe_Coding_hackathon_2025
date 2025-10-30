@@ -1,11 +1,12 @@
-{
-  "id": "sunset",
-  "name": "Sunset Orange",
-  "icon": "sun",
-  "color": "orange",
-  "bgClass": "bg-orange-50",
-  "cardClass": "bg-white",
-  "textClass": "text-gray-900",
-  "borderClass": "border-orange-200"
-}
-
+[
+  {
+    "id": "sunset-light",
+    "name": "Sunset Orange Light",
+    "color": "orange"
+  },
+  {
+    "id": "sunset-dark",
+    "name": "Sunset Orange Dark",
+    "color": "orange"
+  }
+]

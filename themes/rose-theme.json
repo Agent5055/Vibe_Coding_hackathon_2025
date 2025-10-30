@@ -1,0 +1,13 @@
+[
+  {
+    "id": "rose-light",
+    "name": "Rose Pink Light",
+    "color": "pink"
+  },
+  {
+    "id": "rose-dark",
+    "name": "Rose Pink Dark",
+    "color": "pink"
+  }
+]
+

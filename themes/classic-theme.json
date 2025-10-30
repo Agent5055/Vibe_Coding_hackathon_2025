@@ -1,0 +1,13 @@
+[
+  {
+    "id": "classic-light",
+    "name": "Classic Light",
+    "color": "gray"
+  },
+  {
+    "id": "classic-dark",
+    "name": "Classic Dark",
+    "color": "gray"
+  }
+]
+

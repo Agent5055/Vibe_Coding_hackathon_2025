@@ -1,11 +1,12 @@
-{
-  "id": "purple-haze",
-  "name": "Purple Haze",
-  "icon": "sun",
-  "color": "purple",
-  "bgClass": "bg-purple-50",
-  "cardClass": "bg-white",
-  "textClass": "text-gray-900",
-  "borderClass": "border-purple-200"
-}
-
+[
+  {
+    "id": "purple-light",
+    "name": "Purple Haze Light",
+    "color": "purple"
+  },
+  {
+    "id": "purple-dark",
+    "name": "Purple Haze Dark",
+    "color": "purple"
+  }
+]

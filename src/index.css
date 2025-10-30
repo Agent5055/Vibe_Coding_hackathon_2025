@@ -65,6 +65,91 @@
   --border-color: #9f1239;
 }
 
+/* Forest Green Theme */
+.theme-forest-light {
+  --bg-primary: #f0fdf4;
+  --bg-secondary: #ffffff;
+  --text-primary: #14532d;
+  --text-secondary: #15803d;
+  --border-color: #bbf7d0;
+}
+
+.theme-forest-dark {
+  --bg-primary: #14532d;
+  --bg-secondary: #166534;
+  --text-primary: #f0fdf4;
+  --text-secondary: #bbf7d0;
+  --border-color: #15803d;
+}
+
+/* Sunset Orange Theme */
+.theme-sunset-light {
+  --bg-primary: #fff7ed;
+  --bg-secondary: #ffffff;
+  --text-primary: #7c2d12;
+  --text-secondary: #c2410c;
+  --border-color: #fed7aa;
+}
+
+.theme-sunset-dark {
+  --bg-primary: #7c2d12;
+  --bg-secondary: #9a3412;
+  --text-primary: #fff7ed;
+  --text-secondary: #fed7aa;
+  --border-color: #c2410c;
+}
+
+/* Purple Haze Theme */
+.theme-purple-light {
+  --bg-primary: #faf5ff;
+  --bg-secondary: #ffffff;
+  --text-primary: #581c87;
+  --text-secondary: #7e22ce;
+  --border-color: #e9d5ff;
+}
+
+.theme-purple-dark {
+  --bg-primary: #581c87;
+  --bg-secondary: #6b21a8;
+  --text-primary: #faf5ff;
+  --text-secondary: #e9d5ff;
+  --border-color: #7e22ce;
+}
+
+/* Ocean Deep Theme */
+.theme-ocean-light {
+  --bg-primary: #ecfeff;
+  --bg-secondary: #ffffff;
+  --text-primary: #083344;
+  --text-secondary: #0e7490;
+  --border-color: #a5f3fc;
+}
+
+.theme-ocean-dark {
+  --bg-primary: #083344;
+  --bg-secondary: #155e75;
+  --text-primary: #cffafe;
+  --text-secondary: #67e8f9;
+  --border-color: #0e7490;
+}
+
+/* Mocha Theme */
+.theme-mocha-light {
+  --bg-primary: #fef3c7;
+  --bg-secondary: #ffffff;
+  --text-primary: #451a03;
+  --text-secondary: #78350f;
+  --border-color: #fde68a;
+}
+
+.theme-mocha-dark {
+  --bg-primary: #451a03;
+  --bg-secondary: #1c1917;
+  --text-primary: #fef3c7;
+  --text-secondary: #fcd34d;
+  --border-color: #78350f;
+}
+
 /* Base Styles */
 * {
   box-sizing: border-box;
@@ -285,6 +370,46 @@ button:not(:disabled) {
 
 .theme-rose-dark .cytoscape-container {
   background: linear-gradient(135deg, #500724 0%, #881337 100%);
+}
+
+.theme-forest-light .cytoscape-container {
+  background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
+}
+
+.theme-forest-dark .cytoscape-container {
+  background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+}
+
+.theme-sunset-light .cytoscape-container {
+  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+}
+
+.theme-sunset-dark .cytoscape-container {
+  background: linear-gradient(135deg, #7c2d12 0%, #9a3412 100%);
+}
+
+.theme-purple-light .cytoscape-container {
+  background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
+}
+
+.theme-purple-dark .cytoscape-container {
+  background: linear-gradient(135deg, #581c87 0%, #6b21a8 100%);
+}
+
+.theme-ocean-light .cytoscape-container {
+  background: linear-gradient(135deg, #ecfeff 0%, #a5f3fc 100%);
+}
+
+.theme-ocean-dark .cytoscape-container {
+  background: linear-gradient(135deg, #083344 0%, #155e75 100%);
+}
+
+.theme-mocha-light .cytoscape-container {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.theme-mocha-dark .cytoscape-container {
+  background: linear-gradient(135deg, #451a03 0%, #1c1917 100%);
 }
 
 /* Responsive Design Helpers */

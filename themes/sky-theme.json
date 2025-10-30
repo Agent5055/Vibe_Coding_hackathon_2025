@@ -1,0 +1,13 @@
+[
+  {
+    "id": "sky-light",
+    "name": "Sky Blue Light",
+    "color": "blue"
+  },
+  {
+    "id": "sky-dark",
+    "name": "Sky Blue Dark",
+    "color": "blue"
+  }
+]
+
