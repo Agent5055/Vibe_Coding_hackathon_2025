@@ -38,8 +38,16 @@ export const getCustomThemeBases = () => {
     const customThemes = JSON.parse(customThemesStr);
     // Group by base name (remove -light or -dark suffix)
     const bases = {};
+    const defaultThemeIds = THEME_BASES.map(t => t.id); // ['classic', 'sky', 'rose']
+    
     customThemes.forEach(theme => {
       const baseId = theme.id.replace(/-light$|-dark$/, '');
+      
+      // Skip default themes - they shouldn't appear in custom themes list
+      if (defaultThemeIds.includes(baseId)) {
+        return;
+      }
+      
       if (!bases[baseId]) {
         bases[baseId] = {
           id: baseId,
