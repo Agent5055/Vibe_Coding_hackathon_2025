@@ -2,15 +2,15 @@
 
 **Project Submission Report**  
 **Date:** October 30, 2025  
-**Version:** 3.0  
+**Version:** 3.1  
 
 ---
 
-## Recent Updates (Version 3.0)
+## Recent Updates (Version 3.1)
 
 ### New Features Implemented
 
-This version includes major enhancements to content creation, organization, and data portability:
+This version includes major enhancements to content creation, organization, data portability, and user experience:
 
 #### 1. Rich Text Editor with Markdown Support
 - **Tiptap Integration**: Professional rich text editing with full markdown support
@@ -61,6 +61,32 @@ This version includes major enhancements to content creation, organization, and 
 - `notebookId` field for hierarchical organization
 - Efficient indexes for fast queries
 
+#### 9. Read-Only Note Viewer
+- **Double-Click to View**: Double-click any note to open in read-only mode
+- **Clean Reading Experience**: View notes without accidentally editing
+- **Full Metadata Display**: Shows word count, reading time, tags, dates
+- **Quick Edit Access**: "Edit Note" button for when changes are needed
+- **Keyboard Shortcuts**: ESC to close, click outside to dismiss
+
+#### 10. Dynamic Word Count & Reading Time
+- **HTML Tag Stripping**: Accurate counts by removing HTML markup before counting
+- **Real-Time Updates**: Word count and reading time update as you type
+- **Proper Entity Handling**: Decodes HTML entities for accurate measurements
+- **Always Current**: Recalculates on every note load, never stale data
+
+#### 11. Enhanced UI/UX Improvements
+- **Logo Integration**: ThoughtWeaver logo in header with rounded corners
+- **Uniform Buttons**: Daily Note and New Note buttons now match in style and use theme colors
+- **Fixed Search Input**: Search icon properly positioned, no overlap with placeholder text
+- **Pin Toggle Everywhere**: Pin/unpin functionality available in all view modes (list, small/medium/large grids)
+- **Consistent Theming**: All buttons and UI elements adapt to custom themes
+
+#### 12. Theme System Enhancement
+- **8 Total Themes**: 1 built-in default theme + 7 importable themes
+- **Dual Variants**: Every theme includes both light and dark mode
+- **Merged Documentation**: Single comprehensive THEMES.md guide
+- **Importable Collection**: Sky, Rose, Forest Green, Sunset Orange, Purple Haze, Ocean Deep, Mocha
+
 ---
 
 ## 1. Project Overview
@@ -103,11 +129,12 @@ ThoughtWeaver is a privacy-first, intelligent note-taking application that runs 
 - Rich text editor with markdown support, headings, lists, code blocks, quotes
 - Interactive checklists with task items that can be checked/unchecked
 - Each note includes: title, body content, tags, keywords, timestamps, isPinned flag
-- Pin important notes to keep them at the top
+- Pin important notes to keep them at the top (works in all view modes)
+- Double-click any note to view in read-only mode with full metadata
 - Automatic keyword extraction with weighted headings (3x importance)
-- Real-time word count and reading time calculation (200 words/min)
+- Dynamic word count and reading time with HTML tag stripping (200 words/min)
 - Full-text search across all note content
-- Daily Note quick access for journaling
+- Daily Note quick access for journaling with pre-filled templates
 
 **How to use:**
 1. Click "New Note" or "Daily Note" button in header
@@ -115,9 +142,10 @@ ThoughtWeaver is a privacy-first, intelligent note-taking application that runs 
 3. Create checklists using the task list button
 4. Fill in title, content, and select tags from dropdown
 5. Optional: Enable revision reminder with custom days
-6. Click pin button to keep note at top of list
-4. Save note - keywords are automatically extracted
-5. Notes appear in dashboard with all metadata
+6. Click pin button to keep note at top of list (available on hover in all views)
+7. Save note - keywords are automatically extracted, word count updated
+8. Double-click any note to view in read-only mode
+9. Notes appear in dashboard with all metadata
 
 **Performance:**
 - Create note: < 50ms
@@ -504,16 +532,16 @@ These are UX enhancements for theme management that were deprioritized for this 
 **Future Fix:** Add touch gesture library for better mobile experience
 
 #### 4. Theme Toggle Cycles All Themes (Not Just Defaults)
-**Issue:** Top theme button cycles through imported themes too  
-**Reason:** Pending enhancement not yet implemented  
-**Impact:** Minor UX inconsistency  
-**Fix:** Straightforward to limit to default 6 themes only
+**Status:** ✅ **RESOLVED** - Theme toggle now correctly switches between light/dark modes only  
+**Previous Issue:** Top theme button cycled through all themes  
+**Current Behavior:** Toggle switches between light and dark variants of current theme  
+**Theme Selection:** Done through Settings panel (8 themes total: 1 built-in + 7 importable)
 
 #### 5. No Markdown Support
-**Issue:** Notes are plain text only, no formatting  
-**Impact:** Limited rich text capabilities  
-**Mitigation:** Users can use markdown syntax manually  
-**Future Fix:** Add markdown parser and preview mode
+**Status:** ✅ **RESOLVED** - Rich text editor with full markdown support implemented  
+**Previous Issue:** Notes were plain text only  
+**Current Implementation:** Tiptap editor with markdown, headings, lists, code blocks, checklists  
+**Additional Features:** Toggle between rich text and plain text modes
 
 ---
 
