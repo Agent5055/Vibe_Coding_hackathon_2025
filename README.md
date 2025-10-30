@@ -2,14 +2,36 @@
 
 A modern, intelligent note-taking application with mind-map visualization and automatic keyword linking. Built with React, Vite, and TailwindCSS.
 
+![ThoughtWeaver Hero](./docs/screenshots/hero.png)
+
 ## Features
 
 - **Smart Note Management**: Create, edit, and delete notes with automatic keyword extraction
 - **Mind Map Visualization**: Interactive graph view showing relationships between notes
 - **Analytics Dashboard**: Track your learning patterns with detailed statistics
-- **Dark/Light Mode**: Beautiful theme switching with system preference detection
+- **6 Beautiful Themes**: Choose from 3 light and 3 dark themes to match your mood and workflow (see [Themes Guide](THEMES.md))
 - **Local Storage**: All data stored locally in your browser
 - **Responsive Design**: Works perfectly on desktop and mobile devices
+
+## Themes
+
+ThoughtWeaver comes with **6 stunning themes** to personalize your experience:
+
+### Light Themes
+- 🌞 **Classic Light** - Clean, professional gray tones
+- 🌞 **Sky Blue** - Refreshing blue hues for clarity and focus
+- 🌞 **Rose Pink** - Gentle pink tones for a warm atmosphere
+
+### Dark Themes
+- 🌙 **Slate Dark** - Modern dark gray for reduced eye strain
+- 🌙 **Midnight Blue** - Deep blue for immersive focus
+- 🌙 **Pitch Black** - True black for OLED displays
+
+![Theme Showcase](./docs/screenshots/theme-showcase.png)
+
+**Switch themes instantly** with the toggle button in the header. Your preference is automatically saved!
+
+👉 **[View Full Theme Documentation](THEMES.md)** for screenshots and details about each theme.
 
 ## Tech Stack
 
