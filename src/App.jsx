@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { storage } from './utils/storage.js';
 import { extractNoteKeywords } from './utils/keywords.js';
 import { tagManager } from './utils/tagManager.js';
-import { getCurrentThemeBase, getThemeMode, applyTheme } from './utils/themes.js';
+import { applyTheme } from './utils/themes.js';
 import NoteForm from './components/NoteForm.jsx';
 import NoteList from './components/NoteList.jsx';
 import MindMap from './components/MindMap.jsx';
@@ -38,11 +38,10 @@ function App() {
     };
     loadData();
 
-    // Initialize theme system
-    const baseTheme = getCurrentThemeBase();
-    const mode = getThemeMode();
-    applyTheme(baseTheme, mode);
-    setCurrentTheme(`${baseTheme}-${mode}`);
+    // Initialize theme system - applyTheme handles everything including migration
+    const savedTheme = localStorage.getItem('thoughtweaver_theme') || 'classic-light';
+    applyTheme(savedTheme);
+    setCurrentTheme(savedTheme);
 
     // Check for saved layout
     const savedLayout = localStorage.getItem('thoughtweaver_layout') || 'cozy';

@@ -19,6 +19,16 @@ export const THEME_BASES = [
   }
 ];
 
+// Map old theme IDs to new format for backward compatibility
+const OLD_THEME_MAP = {
+  'light': 'classic-light',
+  'sky': 'sky-light',
+  'rose': 'rose-light',
+  'dark': 'classic-dark',
+  'midnight': 'sky-dark',
+  'pitch': 'rose-dark'
+};
+
 // Get custom theme bases from localStorage
 export const getCustomThemeBases = () => {
   try {
@@ -50,31 +60,65 @@ export const getAllThemeBases = () => {
   return [...THEME_BASES, ...getCustomThemeBases()];
 };
 
-// Get theme mode from localStorage (light or dark)
-export const getThemeMode = () => {
-  return localStorage.getItem('thoughtweaver_theme_mode') || 'light';
+// Get current full theme ID from localStorage
+const getCurrentThemeId = () => {
+  const saved = localStorage.getItem('thoughtweaver_theme');
+  if (!saved) return 'classic-light';
+  
+  // Check if it's an old theme ID and convert
+  if (OLD_THEME_MAP[saved]) {
+    const newId = OLD_THEME_MAP[saved];
+    localStorage.setItem('thoughtweaver_theme', newId);
+    return newId;
+  }
+  
+  // Ensure it has -light or -dark suffix
+  if (!saved.endsWith('-light') && !saved.endsWith('-dark')) {
+    return 'classic-light';
+  }
+  
+  return saved;
 };
 
-// Get current theme base from localStorage
+// Get theme mode from current theme ID
+export const getThemeMode = () => {
+  const themeId = getCurrentThemeId();
+  return themeId.endsWith('-dark') ? 'dark' : 'light';
+};
+
+// Get current theme base from theme ID
 export const getCurrentThemeBase = () => {
-  return localStorage.getItem('thoughtweaver_theme_base') || 'classic';
+  const themeId = getCurrentThemeId();
+  return themeId.replace(/-light$|-dark$/, '');
 };
 
 // Toggle between light and dark mode
 export const toggleThemeMode = () => {
-  const currentMode = getThemeMode();
+  const currentId = getCurrentThemeId();
+  const currentMode = currentId.endsWith('-dark') ? 'dark' : 'light';
   const newMode = currentMode === 'light' ? 'dark' : 'light';
-  localStorage.setItem('thoughtweaver_theme_mode', newMode);
+  const baseId = currentId.replace(/-light$|-dark$/, '');
+  const newId = `${baseId}-${newMode}`;
   
-  const currentBase = getCurrentThemeBase();
-  applyTheme(currentBase, newMode);
-  
+  applyTheme(newId);
   return newMode;
 };
 
-// Apply theme classes to document
-export const applyTheme = (baseThemeId, mode) => {
-  const themeId = `${baseThemeId}-${mode}`;
+// Apply theme to document
+export const applyTheme = (themeId) => {
+  // Normalize theme ID
+  let finalId = themeId;
+  
+  // Handle old format
+  if (OLD_THEME_MAP[themeId]) {
+    finalId = OLD_THEME_MAP[themeId];
+  }
+  
+  // If no suffix, add -light
+  if (!finalId.endsWith('-light') && !finalId.endsWith('-dark')) {
+    const mode = getThemeMode();
+    finalId = `${finalId}-${mode}`;
+  }
   
   // Remove all existing theme classes
   document.documentElement.className = document.documentElement.className
@@ -83,22 +127,21 @@ export const applyTheme = (baseThemeId, mode) => {
     .join(' ');
   
   // Add current theme class
-  document.documentElement.classList.add(`theme-${themeId}`);
+  document.documentElement.classList.add(`theme-${finalId}`);
   
   // Store in localStorage
-  localStorage.setItem('thoughtweaver_theme_base', baseThemeId);
-  localStorage.setItem('thoughtweaver_theme_mode', mode);
-  localStorage.setItem('thoughtweaver_theme', themeId); // For backward compatibility
+  localStorage.setItem('thoughtweaver_theme', finalId);
 };
 
 // Change theme base (keeps current light/dark mode)
-export const changeThemeBase = (baseThemeId) => {
+export const changeThemeBase = (baseId) => {
   const currentMode = getThemeMode();
-  applyTheme(baseThemeId, currentMode);
+  const newId = `${baseId}-${currentMode}`;
+  applyTheme(newId);
 };
 
 // Delete a custom theme (both light and dark variants)
-export const deleteCustomTheme = (baseThemeId) => {
+export const deleteCustomTheme = (baseId) => {
   try {
     const customThemesStr = localStorage.getItem('thoughtweaver_custom_themes');
     if (!customThemesStr) return true;
@@ -106,16 +149,17 @@ export const deleteCustomTheme = (baseThemeId) => {
     const customThemes = JSON.parse(customThemesStr);
     const filtered = customThemes.filter(t => {
       const base = t.id.replace(/-light$|-dark$/, '');
-      return base !== baseThemeId;
+      return base !== baseId;
     });
     
     localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(filtered));
     
     // Failsafe: If deleting currently active theme, switch to first default theme
-    const currentBase = getCurrentThemeBase();
-    if (currentBase === baseThemeId) {
+    const currentId = getCurrentThemeId();
+    const currentBase = currentId.replace(/-light$|-dark$/, '');
+    if (currentBase === baseId) {
       const currentMode = getThemeMode();
-      applyTheme('classic', currentMode);
+      applyTheme(`classic-${currentMode}`);
     }
     
     return true;
@@ -211,6 +255,11 @@ export const validateThemeConfig = (theme) => {
 
 // For backward compatibility - get theme by old ID format
 export const getTheme = (themeId) => {
+  // Map old IDs to new format
+  if (OLD_THEME_MAP[themeId]) {
+    themeId = OLD_THEME_MAP[themeId];
+  }
+  
   // Extract base and mode from themeId
   let baseId, mode;
   if (themeId.endsWith('-light') || themeId.endsWith('-dark')) {
@@ -218,19 +267,8 @@ export const getTheme = (themeId) => {
     mode = parts.pop();
     baseId = parts.join('-');
   } else {
-    // Old format - map to new format
-    const oldToNew = {
-      'light': 'classic-light',
-      'sky': 'sky-light',
-      'rose': 'rose-light',
-      'dark': 'classic-dark',
-      'midnight': 'sky-dark',
-      'pitch': 'rose-dark'
-    };
-    themeId = oldToNew[themeId] || 'classic-light';
-    const parts = themeId.split('-');
-    mode = parts.pop();
-    baseId = parts.join('-');
+    baseId = themeId;
+    mode = 'light';
   }
   
   return { id: baseId, mode };
