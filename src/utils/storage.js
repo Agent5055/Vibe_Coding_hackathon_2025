@@ -41,10 +41,32 @@ initStorage().catch(err => {
   useIndexedDB = false;
 });
 
+// Helper: Strip HTML tags from text
+const stripHtmlTags = (html) => {
+  if (!html || typeof html !== 'string') return '';
+  // Remove HTML tags and get text content
+  const withoutTags = html.replace(/<[^>]*>/g, ' ');
+  // Decode HTML entities
+  const textarea = typeof document !== 'undefined' ? document.createElement('textarea') : null;
+  if (textarea) {
+    textarea.innerHTML = withoutTags;
+    return textarea.value;
+  }
+  // Fallback for server-side or when document is not available
+  return withoutTags
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+};
+
 // Helper: Calculate word count
 const calculateWordCount = (text) => {
   if (!text || typeof text !== 'string') return 0;
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  const plainText = stripHtmlTags(text);
+  return plainText.trim().split(/\s+/).filter(word => word.length > 0).length;
 };
 
 // Helper: Calculate reading time (200 words per minute)
@@ -61,8 +83,9 @@ const enhanceNote = (note) => {
     isPinned: note.isPinned ?? false,
     lastOpened: note.lastOpened || note.updatedAt || note.createdAt,
     versions: note.versions || [],
-    wordCount: note.wordCount || calculateWordCount(body),
-    readingTime: note.readingTime || calculateReadingTime(body),
+    // Always recalculate word count and reading time from current body
+    wordCount: calculateWordCount(body),
+    readingTime: calculateReadingTime(body),
     revisionReminder: note.revisionReminder || {
       enabled: false,
       days: 7,

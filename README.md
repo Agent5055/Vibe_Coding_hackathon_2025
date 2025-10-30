@@ -27,7 +27,9 @@ A modern, intelligent note-taking application with mind-map visualization and au
   - Export notes as Markdown (.md) or PDF
   - Export complete backups as JSON
   - Import markdown files with frontmatter support
-- **6 Beautiful Themes**: Choose from 3 light and 3 dark themes to match your mood and workflow (see [Themes Guide](THEMES.md))
+- **8 Beautiful Themes**: 1 built-in default theme + 7 importable themes, each with light and dark variants (see [Themes Guide](THEMES.md))
+- **Pin Notes**: Pin important notes to keep them at the top across all view modes
+- **Read-Only View**: Double-click notes to view content without editing, with quick access to edit mode
 - **Local Storage with IndexedDB**: Efficient storage for 500+ notes, all data stored locally in your browser
 - **Responsive Design**: Works perfectly on desktop and mobile devices
 
@@ -47,21 +49,23 @@ A modern, intelligent note-taking application with mind-map visualization and au
 
 ## Themes
 
-ThoughtWeaver comes with **6 stunning themes** to personalize your experience:
+ThoughtWeaver includes **8 stunning themes** (1 built-in + 7 importable) to personalize your experience:
 
-### Light Themes
-- 🌞 **Classic Light** - Clean, professional gray tones
-- 🌞 **Sky Blue** - Refreshing blue hues for clarity and focus
-- 🌞 **Rose Pink** - Gentle pink tones for a warm atmosphere
+### Built-in Theme
+- 🎨 **Default** - Classic white (light) and black (dark) theme
 
-### Dark Themes
-- 🌙 **Slate Dark** - Modern dark gray for reduced eye strain
-- 🌙 **Midnight Blue** - Deep blue for immersive focus
-- 🌙 **Pitch Black** - True black for OLED displays
+### Importable Themes (in themes/ folder)
+- 🦋 **Sky** - Calming blue tones (light & dark)
+- 🌸 **Rose** - Gentle pink aesthetics (light & dark)
+- 🌲 **Forest Green** - Nature-inspired greens (light & dark)
+- 🌅 **Sunset Orange** - Warm orange tones (light & dark)
+- 💜 **Purple Haze** - Creative purple shades (light & dark)
+- 🌊 **Ocean Deep** - Ocean-inspired blues (light & dark)
+- ☕ **Mocha** - Coffee-inspired browns (light & dark)
 
-![Theme Showcase](./docs/screenshots/theme-showcase.png)
+Each theme has both **light and dark variants**. Switch between light/dark modes with the toggle button in the header, and import new themes from Settings → Theme Management. Your preferences are automatically saved!
 
-**Switch themes instantly** with the toggle button in the header. Your preference is automatically saved!
+For detailed theme documentation, custom theme creation, and import instructions, see the [Themes Guide](THEMES.md).
 
 👉 **[View Full Theme Documentation](THEMES.md)** for screenshots and details about each theme.
 
@@ -205,7 +209,8 @@ The built application can be deployed to:
 - **MindMap.jsx**: Cytoscape.js integration with filters, mini-map, and export
 - **StatsPanel.jsx**: Comprehensive analytics dashboard with charts and insights
 - **SettingsPanel.jsx**: Centralized configuration for all app settings
-- **ThemeToggle.jsx**: Multi-theme switcher (6 themes)
+- **ThemeToggle.jsx**: Multi-theme switcher with light/dark mode toggle
+- **NoteViewModal.jsx**: Read-only note viewer with double-click access
 
 ### New Intelligence Components
 

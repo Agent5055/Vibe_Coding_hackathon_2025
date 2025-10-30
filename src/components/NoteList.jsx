@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { storage } from '../utils/storage.js';
 import RevisionReminder from './RevisionReminder.jsx';
 
-const NoteList = ({ notes, onEdit, onDelete, onView }) => {
+const NoteList = ({ notes, onEdit, onDelete, onView, onDoubleClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortBy, setSortBy] = useState('updatedAt');
@@ -178,17 +178,17 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
+              <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               <input
                 type="text"
                 placeholder="Search notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-14 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
               />
-              <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
             </div>
           </div>
 
@@ -326,7 +326,7 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                   key={note.id}
                   className="rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group flex items-center gap-4"
                   style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}
-                  onClick={() => onView(note)}
+                  onDoubleClick={() => onDoubleClick(note)}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-1">
@@ -419,7 +419,7 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                   key={note.id}
                   className="rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
                   style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}
-                  onClick={() => onView(note)}
+                  onDoubleClick={() => onDoubleClick(note)}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-1 flex-1 min-w-0">
@@ -433,6 +433,19 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                       </h3>
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 ml-2">
+                      <button
+                        onClick={(e) => handleTogglePin(e, note.id)}
+                        className={`p-1 rounded transition-all duration-200 ${
+                          note.isPinned 
+                            ? 'text-yellow-500 hover:text-yellow-600' 
+                            : 'text-gray-400 hover:text-yellow-500'
+                        }`}
+                        title={note.isPinned ? 'Unpin' : 'Pin'}
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                      </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -484,7 +497,7 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                   key={note.id}
                   className="rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
                   style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}
-                  onClick={() => onView(note)}
+                  onDoubleClick={() => onDoubleClick(note)}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -498,6 +511,19 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                       </h3>
                     </div>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <button
+                        onClick={(e) => handleTogglePin(e, note.id)}
+                        className={`p-1.5 rounded-lg transition-all duration-200 ${
+                          note.isPinned 
+                            ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20' 
+                            : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20'
+                        }`}
+                        title={note.isPinned ? 'Unpin' : 'Pin'}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                      </button>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -564,7 +590,7 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
               key={note.id}
               className="rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
               style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}
-              onClick={() => onView(note)}
+              onDoubleClick={() => onDoubleClick(note)}
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -578,6 +604,19 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
                   </h3>
                 </div>
                 <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button
+                    onClick={(e) => handleTogglePin(e, note.id)}
+                    className={`p-2 rounded-lg transition-all duration-200 ${
+                      note.isPinned 
+                        ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20' 
+                        : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20'
+                    }`}
+                    title={note.isPinned ? 'Unpin' : 'Pin'}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                  </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

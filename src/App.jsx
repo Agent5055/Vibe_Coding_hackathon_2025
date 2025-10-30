@@ -11,6 +11,7 @@ import ThemeToggle from './components/ThemeToggle.jsx';
 import SettingsPanel from './components/SettingsPanel.jsx';
 import LinkedNotes from './components/LinkedNotes.jsx';
 import VersionHistoryModal from './components/VersionHistoryModal.jsx';
+import NoteViewModal from './components/NoteViewModal.jsx';
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -21,6 +22,7 @@ function App() {
   const [currentTheme, setCurrentTheme] = useState('light');
   const [versionHistoryNote, setVersionHistoryNote] = useState(null);
   const [layoutMode, setLayoutMode] = useState('cozy');
+  const [viewingNote, setViewingNote] = useState(null);
 
   // Load notes, theme, and layout on mount
   useEffect(() => {
@@ -139,6 +141,18 @@ function App() {
     setSelectedNote(note);
   };
 
+  const handleOpenViewModal = async (note) => {
+    // Open read-only view modal
+    await storage.updateLastOpened(note.id);
+    const updatedNotes = await storage.getAllNotes();
+    setNotes(updatedNotes);
+    setViewingNote(note);
+  };
+
+  const handleCloseViewModal = () => {
+    setViewingNote(null);
+  };
+
   const handleRestoreVersion = async (versionData) => {
     if (versionHistoryNote) {
       await handleSaveNote({
@@ -218,19 +232,26 @@ function App() {
       <header className="backdrop-blur-sm sticky top-0 z-40" style={{ backgroundColor: 'var(--bg-secondary)', opacity: 0.95, borderBottom: `1px solid var(--border-color)` }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                ThoughtWeaver
-              </h1>
-              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Smart Learning Tracker
-              </span>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/thoughtweaver-logo.png" 
+                alt="ThoughtWeaver Logo" 
+                className="h-12 w-16 rounded-lg object-cover"
+              />
+              <div className="flex items-center space-x-4">
+                <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                  ThoughtWeaver
+                </h1>
+                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  Smart Learning Tracker
+                </span>
+              </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={handleDailyNote}
-                className="px-3 py-2 rounded-lg hover:opacity-80 transition-all duration-200 flex items-center space-x-2"
+                className="px-4 py-2 rounded-lg hover:opacity-80 transition-all duration-200 flex items-center space-x-2"
                 style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
                 title="Open or create today's daily note"
               >
@@ -242,7 +263,9 @@ function App() {
               
               <button
                 onClick={handleCreateNote}
-                className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200 flex items-center space-x-2"
+                className="px-4 py-2 rounded-lg hover:opacity-80 transition-all duration-200 flex items-center space-x-2"
+                style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
+                title="Create a new note"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -287,6 +310,7 @@ function App() {
             onEdit={handleEditNote}
             onDelete={handleDeleteNote}
             onView={handleViewNote}
+            onDoubleClick={handleOpenViewModal}
           />
         )}
 
@@ -429,6 +453,15 @@ function App() {
         onCancel={handleCloseForm}
         isOpen={isFormOpen}
       />
+
+      {/* Note View Modal */}
+      {viewingNote && (
+        <NoteViewModal
+          note={viewingNote}
+          onClose={handleCloseViewModal}
+          onEdit={handleEditNote}
+        />
+      )}
     </div>
   );
 }
