@@ -1,0 +1,13 @@
+[
+  {
+    "id": "default-light",
+    "name": "Default Light",
+    "color": "gray"
+  },
+  {
+    "id": "default-dark",
+    "name": "Default Dark",
+    "color": "gray"
+  }
+]
+

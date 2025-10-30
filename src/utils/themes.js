@@ -1,35 +1,28 @@
 // Theme configuration for ThoughtWeaver
 // Each theme has both light and dark variants following the pattern: baseThemeName-light and baseThemeName-dark
 
+// Only one built-in default theme (white/black)
 export const THEME_BASES = [
   {
-    id: 'classic',
-    name: 'Classic',
+    id: 'default',
+    name: 'Default',
     color: 'gray'
-  },
-  {
-    id: 'sky',
-    name: 'Sky Blue',
-    color: 'blue'
-  },
-  {
-    id: 'rose',
-    name: 'Rose Pink',
-    color: 'pink'
   }
 ];
 
 // Map old theme IDs to new format for backward compatibility
 const OLD_THEME_MAP = {
-  'light': 'classic-light',
+  'light': 'default-light',
+  'classic-light': 'default-light',
   'sky': 'sky-light',
   'rose': 'rose-light',
-  'dark': 'classic-dark',
+  'dark': 'default-dark',
+  'classic-dark': 'default-dark',
   'midnight': 'sky-dark',
   'pitch': 'rose-dark'
 };
 
-// Get custom theme bases from localStorage
+// Get custom theme bases from localStorage (imported themes only)
 export const getCustomThemeBases = () => {
   try {
     const customThemesStr = localStorage.getItem('thoughtweaver_custom_themes');
@@ -38,16 +31,11 @@ export const getCustomThemeBases = () => {
     const customThemes = JSON.parse(customThemesStr);
     // Group by base name (remove -light or -dark suffix)
     const bases = {};
-    const defaultThemeIds = THEME_BASES.map(t => t.id); // ['classic', 'sky', 'rose']
     
     customThemes.forEach(theme => {
       const baseId = theme.id.replace(/-light$|-dark$/, '');
       
-      // Skip default themes - they shouldn't appear in custom themes list
-      if (defaultThemeIds.includes(baseId)) {
-        return;
-      }
-      
+      // Don't filter - return all custom themes
       if (!bases[baseId]) {
         bases[baseId] = {
           id: baseId,
@@ -71,7 +59,7 @@ export const getAllThemeBases = () => {
 // Get current full theme ID from localStorage
 const getCurrentThemeId = () => {
   const saved = localStorage.getItem('thoughtweaver_theme');
-  if (!saved) return 'classic-light';
+  if (!saved) return 'default-dark'; // Default to dark mode
   
   // Check if it's an old theme ID and convert
   if (OLD_THEME_MAP[saved]) {
@@ -82,7 +70,7 @@ const getCurrentThemeId = () => {
   
   // Ensure it has -light or -dark suffix
   if (!saved.endsWith('-light') && !saved.endsWith('-dark')) {
-    return 'classic-light';
+    return 'default-dark';
   }
   
   return saved;
@@ -150,6 +138,12 @@ export const changeThemeBase = (baseId) => {
 
 // Delete a custom theme (both light and dark variants)
 export const deleteCustomTheme = (baseId) => {
+  // Prevent deleting the default theme
+  if (baseId === 'default') {
+    console.warn('Cannot delete default theme');
+    return false;
+  }
+  
   try {
     const customThemesStr = localStorage.getItem('thoughtweaver_custom_themes');
     if (!customThemesStr) return true;
@@ -162,12 +156,12 @@ export const deleteCustomTheme = (baseId) => {
     
     localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(filtered));
     
-    // Failsafe: If deleting currently active theme, switch to first default theme
+    // Failsafe: If deleting currently active theme, switch to default theme
     const currentId = getCurrentThemeId();
     const currentBase = currentId.replace(/-light$|-dark$/, '');
     if (currentBase === baseId) {
       const currentMode = getThemeMode();
-      applyTheme(`classic-${currentMode}`);
+      applyTheme(`default-${currentMode}`);
     }
     
     return true;
@@ -218,6 +212,7 @@ export const exportThemeConfig = (baseThemeId) => {
 };
 
 // Import and validate theme configuration
+// Returns the base theme ID if successful, null otherwise
 export const importThemeConfig = (jsonString) => {
   try {
     const themes = JSON.parse(jsonString);
@@ -232,7 +227,27 @@ export const importThemeConfig = (jsonString) => {
       }
     }
     
-    return themes;
+    // Get existing custom themes
+    const existingStr = localStorage.getItem('thoughtweaver_custom_themes');
+    const existingThemes = existingStr ? JSON.parse(existingStr) : [];
+    
+    // Get the base ID of the imported theme
+    const baseId = themes[0].id.replace(/-light$|-dark$/, '');
+    
+    // Remove any existing themes with the same base ID
+    const filteredExisting = existingThemes.filter(t => {
+      const base = t.id.replace(/-light$|-dark$/, '');
+      return base !== baseId;
+    });
+    
+    // Add new themes
+    const updatedThemes = [...filteredExisting, ...themes];
+    localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(updatedThemes));
+    
+    // Auto-apply the imported theme in DARK mode
+    applyTheme(`${baseId}-dark`);
+    
+    return baseId; // Return base ID for success indication
   } catch (error) {
     console.error('Error parsing theme config:', error);
     return null;

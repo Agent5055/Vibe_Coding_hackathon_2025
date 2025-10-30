@@ -117,16 +117,15 @@ const SettingsPanel = () => {
   const handleExportTheme = () => {
     const currentBaseId = getCurrentThemeBase();
     
-    // Check if this is a default theme
-    const isDefaultTheme = THEME_BASES.some(t => t.id === currentBaseId);
-    if (isDefaultTheme) {
-      alert('This is a default theme. You can only export custom imported themes.');
+    // Cannot export default theme
+    if (currentBaseId === 'default') {
+      alert('Cannot export the default theme. Please import and use a custom theme to export.');
       return;
     }
     
     const themeJson = exportThemeConfig(currentBaseId);
     if (!themeJson) {
-      alert('Could not export theme');
+      alert('Could not export theme. Make sure you have a custom theme applied.');
       return;
     }
     
@@ -149,44 +148,18 @@ const SettingsPanel = () => {
     setImporting(true);
     try {
       const text = await file.text();
-      const themeVariants = importThemeConfig(text);
+      const baseId = importThemeConfig(text);
       
-      if (!themeVariants || themeVariants.length === 0) {
+      if (!baseId) {
         alert('Invalid theme file format. Themes must include both -light and -dark variants.');
         return;
       }
-
-      // Save custom theme variants
-      const customThemes = JSON.parse(localStorage.getItem('thoughtweaver_custom_themes') || '[]');
       
-      // Get base name from first variant
-      const baseId = themeVariants[0].id.replace(/-light$|-dark$/, '');
-      const themeName = themeVariants[0].name.replace(/ Light$| Dark$/, '');
-      
-      // Check if theme base already exists
-      const existingVariants = customThemes.filter(t => {
-        const base = t.id.replace(/-light$|-dark$/, '');
-        return base === baseId;
-      });
-      
-      if (existingVariants.length > 0) {
-        if (!window.confirm(`Theme "${themeName}" already exists. Replace it?`)) {
-          return;
-        }
-        // Remove old variants
-        const filtered = customThemes.filter(t => {
-          const base = t.id.replace(/-light$|-dark$/, '');
-          return base !== baseId;
-        });
-        filtered.push(...themeVariants);
-        localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(filtered));
-      } else {
-        customThemes.push(...themeVariants);
-        localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(customThemes));
-      }
-      
-      alert(`Theme "${themeName}" imported successfully!`);
+      // Theme is automatically applied and saved by importThemeConfig
       loadCustomThemes(); // Refresh the list
+      
+      // Dispatch event to notify other components
+      window.dispatchEvent(new CustomEvent('themeBaseChange', { detail: { baseId } }));
       
     } catch (error) {
       console.error('Error importing theme:', error);
@@ -515,46 +488,68 @@ const SettingsPanel = () => {
             </div>
           </label>
           
-          {/* Custom Themes List */}
-          {customThemes.length > 0 && (
-            <div className="mt-6 pt-6" style={{ borderTop: '1px solid var(--border-color)' }}>
-              <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>
-                Custom Themes ({customThemes.length})
-              </h4>
-              <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
-                {customThemes.map(theme => (
-                  <div 
-                    key={theme.id}
-                    className="flex items-center justify-between p-3 rounded-lg"
-                    style={{ 
-                      backgroundColor: 'var(--bg-primary)',
-                      borderWidth: '1px',
-                      borderStyle: 'solid',
-                      borderColor: 'var(--border-color)'
-                    }}
+          {/* Themes List */}
+          <div className="mt-6 pt-6" style={{ borderTop: '1px solid var(--border-color)' }}>
+            <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>
+              Available Themes ({1 + customThemes.length})
+            </h4>
+            <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
+              {/* Default Theme - Always shown, cannot be deleted */}
+              <div 
+                className="flex items-center justify-between p-3 rounded-lg"
+                style={{ 
+                  backgroundColor: 'var(--bg-primary)',
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                  borderColor: 'var(--border-color)'
+                }}
+              >
+                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                  Default
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleApplyThemeBase('default')}
+                    className="px-3 py-1 bg-primary-500 text-white text-sm rounded hover:bg-primary-600 transition-colors duration-200"
                   >
-                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
-                      {theme.name}
-                    </span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleApplyThemeBase(theme.id)}
-                        className="px-3 py-1 bg-primary-500 text-white text-sm rounded hover:bg-primary-600 transition-colors duration-200"
-                      >
-                        Apply
-                      </button>
-                      <button
-                        onClick={() => handleDeleteCustomTheme(theme.id, theme.name)}
-                        className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors duration-200"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                    Apply
+                  </button>
+                </div>
               </div>
+              
+              {/* Custom Imported Themes */}
+              {customThemes.map(theme => (
+                <div 
+                  key={theme.id}
+                  className="flex items-center justify-between p-3 rounded-lg"
+                  style={{ 
+                    backgroundColor: 'var(--bg-primary)',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: 'var(--border-color)'
+                  }}
+                >
+                  <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                    {theme.name}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleApplyThemeBase(theme.id)}
+                      className="px-3 py-1 bg-primary-500 text-white text-sm rounded hover:bg-primary-600 transition-colors duration-200"
+                    >
+                      Apply
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCustomTheme(theme.id, theme.name)}
+                      className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors duration-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
       </div>
 

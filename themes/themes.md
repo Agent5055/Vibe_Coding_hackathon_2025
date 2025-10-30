@@ -1,89 +1,55 @@
-# ThoughtWeaver Theme Collection
+# ThoughtWeaver Theme Catalog
 
-This folder contains ready-to-import theme files for ThoughtWeaver. Each theme includes both light and dark variants.
+This folder contains theme files that you can import into ThoughtWeaver.
 
-📖 **For comprehensive theme documentation and creation guide, see: [THEMES.md](../THEMES.md)**
+## How to Import
 
-## 🎨 Available Themes
+1. Open ThoughtWeaver
+2. Go to **Settings** → **Theme Management**
+3. Click **Import Theme**
+4. Select any `.json` file from this folder
+5. The theme will automatically apply in **dark mode** and appear in your themes list
 
-### Default Themes (Built-in, can be exported)
-1. **Classic** - Traditional gray tones
-   - File: `classic-theme.json`
-   - Light: Clean and professional
-   - Dark: Comfortable slate gray
+## Available Themes
 
-2. **Sky Blue** - Blue tones
-   - File: `sky-theme.json`
+### Default Theme
+- **default-theme.json** - White/Black theme (built-in, already available)
+
+### Importable Themes
+
+1. **sky-theme.json** - Sky Blue theme
    - Light: Light blue and white
    - Dark: Deep midnight blue
 
-3. **Rose Pink** - Pink tones
-   - File: `rose-theme.json`
+2. **rose-theme.json** - Rose Pink theme
    - Light: Soft rose pink
    - Dark: Deep rose crimson
 
-### Extra Themes (Ready to import)
-4. **Forest Green** - Nature-inspired green
-   - File: `forest-green.json`
-   - Light: Soft green and white
-   - Dark: Deep forest green
+3. **forest-green.json** - Forest Green theme
+   - Light: Fresh nature-inspired greens
+   - Dark: Deep forest tones
 
-5. **Sunset Orange** - Warm orange tones
-   - File: `sunset-orange.json`
-   - Light: Warm golden orange
-   - Dark: Deep sunset amber
+4. **sunset-orange.json** - Sunset Orange theme
+   - Light: Warm cream and orange
+   - Dark: Rich sunset browns
 
-6. **Purple Haze** - Creative purple
-   - File: `purple-haze.json`
+5. **purple-haze.json** - Purple Haze theme
    - Light: Soft lavender
-   - Dark: Deep royal purple
+   - Dark: Deep purple
 
-7. **Ocean Deep** - Ocean-inspired cyan/blue
-   - File: `ocean-deep.json`
-   - Light: Light cyan
+6. **ocean-deep.json** - Ocean Deep theme
+   - Light: Light cyan and turquoise
    - Dark: Deep ocean blue
 
-8. **Mocha** - Coffee-inspired browns
-   - File: `mocha.json`
-   - Light: Cream and amber
-   - Dark: Rich coffee brown
+7. **mocha.json** - Mocha theme
+   - Light: Warm beige and cream
+   - Dark: Rich coffee browns
 
-## 📥 How to Import
+## Creating Your Own Theme
 
-1. Open ThoughtWeaver
-2. Go to **Settings** (⚙️)
-3. Scroll to **Theme Management**
-4. Click **Import Theme**
-5. Select a theme JSON file from this folder
-6. Click **Apply** to use the theme
-7. Use the header button to toggle between light/dark modes
+For detailed instructions on creating custom themes, see the main `THEMES.md` file in the root directory.
 
-## 🎯 Theme System
+## Theme Toggle
 
-- **Base Theme Selection**: Choose your theme in Settings
-- **Light/Dark Toggle**: Header button switches between modes
-- Each theme has 2 variants (light + dark)
-- All themes adapt to your preference seamlessly
+The theme toggle button in the header switches between **light** and **dark** modes of your currently active theme.
 
-## 🔧 Create Your Own
-
-Want to create custom themes? Check out the main [THEMES.md](../THEMES.md) guide for:
-- Theme structure and format
-- CSS variable reference
-- Step-by-step creation guide
-- Best practices and tips
-- Example templates
-
-## 📤 Exporting Themes
-
-To share themes with others:
-1. Apply your custom theme
-2. Go to Settings → Theme Management
-3. Click "Export Current Theme"
-4. Share the JSON file!
-
-**Note**: Default themes (Classic, Sky, Rose) can only be exported for reference. Custom imported themes can be freely exported and shared.
-
----
-
-Happy theming! 🎨

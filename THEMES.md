@@ -115,7 +115,7 @@ Create a CSS file with your theme's color scheme. ThoughtWeaver uses CSS custom 
 3. Scroll to **Theme Management** section
 4. Click **Import Theme**
 5. Select your theme JSON file (must contain both light and dark variants)
-6. Your theme will appear in the **Custom Themes** list
+6. **The theme will automatically apply in dark mode** and appear in the **Available Themes** list
 
 ## Exporting Themes
 
@@ -211,7 +211,7 @@ To share your custom theme:
 
 ### Theme Deleted Accidentally
 - If you have the JSON file, just re-import it
-- ThoughtWeaver includes failsafe: deleting active theme reverts to default
+- ThoughtWeaver includes failsafe: deleting active theme reverts to Default theme
 
 ## Sharing Your Themes
 
@@ -221,13 +221,17 @@ Want to share your theme with the community?
 3. Share on GitHub, Discord, or social media
 4. Tag `#ThoughtWeaverThemes`
 
-## Default Themes Reference
+## Built-In Theme
 
-ThoughtWeaver comes with 3 built-in themes:
+ThoughtWeaver comes with **one built-in theme** that cannot be deleted:
 
-1. **Classic** - Traditional gray tones
-   - `classic-light`: Clean and professional
-   - `classic-dark`: Comfortable slate gray
+1. **Default** - Clean white and black theme
+   - `default-light`: Pure white background with black text
+   - `default-dark`: Pure black background with white text (applied by default on first launch)
+
+## Importable Themes
+
+ThoughtWeaver includes **7 additional themes** ready to import from the `themes/` folder:
 
 2. **Sky** - Blue tones
    - `sky-light`: Light blue and white
@@ -237,15 +241,13 @@ ThoughtWeaver comes with 3 built-in themes:
    - `rose-light`: Soft rose pink
    - `rose-dark`: Deep rose crimson
 
-## Available Extra Themes
-
-ThoughtWeaver also includes 5 additional themes ready to import from the `themes/` folder:
-
-4. **Forest Green** - Nature-inspired
+4. **Forest Green** - Nature-inspired green
 5. **Sunset Orange** - Warm and vibrant
 6. **Purple Haze** - Creative and artistic
 7. **Ocean Deep** - Ocean-inspired blues
 8. **Mocha** - Coffee-inspired browns
+
+All imported themes **automatically apply in dark mode first**. Use the theme toggle button in the header to switch between light and dark variants.
 
 See `themes/themes.md` for full catalog with screenshots and descriptions.
 

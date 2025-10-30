@@ -39,7 +39,7 @@ function App() {
     loadData();
 
     // Initialize theme system - applyTheme handles everything including migration
-    const savedTheme = localStorage.getItem('thoughtweaver_theme') || 'classic-light';
+    const savedTheme = localStorage.getItem('thoughtweaver_theme') || 'default-dark';
     applyTheme(savedTheme);
     setCurrentTheme(savedTheme);
 
