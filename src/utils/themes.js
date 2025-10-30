@@ -62,35 +62,71 @@ export const THEMES = [
   }
 ];
 
-// Get theme by ID
-export const getTheme = (themeId) => {
-  return THEMES.find(theme => theme.id === themeId) || THEMES[0];
+// Get custom themes from localStorage
+export const getCustomThemes = () => {
+  try {
+    const customThemesStr = localStorage.getItem('thoughtweaver_custom_themes');
+    return customThemesStr ? JSON.parse(customThemesStr) : [];
+  } catch (error) {
+    console.error('Error loading custom themes:', error);
+    return [];
+  }
 };
 
-// Get next theme in cycle
+// Get all themes (default + custom)
+export const getAllThemes = () => {
+  return [...THEMES, ...getCustomThemes()];
+};
+
+// Get theme by ID (searches both default and custom)
+export const getTheme = (themeId) => {
+  const allThemes = getAllThemes();
+  return allThemes.find(theme => theme.id === themeId) || THEMES[0];
+};
+
+// Get next theme in cycle (includes custom themes)
 export const getNextTheme = (currentThemeId) => {
-  const currentIndex = THEMES.findIndex(theme => theme.id === currentThemeId);
-  const nextIndex = (currentIndex + 1) % THEMES.length;
-  return THEMES[nextIndex];
+  const allThemes = getAllThemes();
+  const currentIndex = allThemes.findIndex(theme => theme.id === currentThemeId);
+  const nextIndex = (currentIndex + 1) % allThemes.length;
+  return allThemes[nextIndex];
 };
 
 // Apply theme classes to document
 export const applyTheme = (themeId) => {
   const theme = getTheme(themeId);
   
-  // Remove all theme classes (including custom themes)
-  document.documentElement.classList.remove(
-    'theme-light', 'theme-sky', 'theme-rose', 
-    'theme-dark', 'theme-midnight', 'theme-pitch',
-    'theme-forest', 'theme-sunset', 'theme-purple-haze',
-    'theme-ocean-deep', 'theme-mocha'
-  );
+  // Remove all existing theme classes
+  const allThemes = getAllThemes();
+  allThemes.forEach(t => {
+    document.documentElement.classList.remove(`theme-${t.id}`);
+  });
   
   // Add current theme class
   document.documentElement.classList.add(`theme-${themeId}`);
   
+  // Apply custom CSS variables if theme has them
+  if (theme.cssVariables) {
+    Object.entries(theme.cssVariables).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
+  }
+  
   // Store in localStorage
   localStorage.setItem('thoughtweaver_theme', themeId);
+};
+
+// Delete a custom theme
+export const deleteCustomTheme = (themeId) => {
+  try {
+    const customThemes = getCustomThemes();
+    const filtered = customThemes.filter(t => t.id !== themeId);
+    localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(filtered));
+    return true;
+  } catch (error) {
+    console.error('Error deleting custom theme:', error);
+    return false;
+  }
 };
 
 // Get theme icon data

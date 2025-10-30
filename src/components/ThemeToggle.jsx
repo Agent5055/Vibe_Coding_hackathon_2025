@@ -11,6 +11,21 @@ const ThemeToggle = () => {
     
     setCurrentTheme(theme);
     applyTheme(theme.id);
+    
+    // Listen for theme changes from other components (e.g., settings panel)
+    const handleThemeChange = (event) => {
+      const themeId = event.detail?.themeId;
+      if (themeId) {
+        const theme = getTheme(themeId);
+        setCurrentTheme(theme);
+      }
+    };
+    
+    window.addEventListener('themechange', handleThemeChange);
+    
+    return () => {
+      window.removeEventListener('themechange', handleThemeChange);
+    };
   }, []);
 
   const cycleTheme = () => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { storage } from '../utils/storage.js';
-import { THEMES, getTheme, exportThemeConfig, importThemeConfig, validateThemeConfig } from '../utils/themes.js';
+import { THEMES, getTheme, getCustomThemes, deleteCustomTheme, applyTheme, exportThemeConfig, importThemeConfig, validateThemeConfig } from '../utils/themes.js';
 import { tagManager } from '../utils/tagManager.js';
 import ImportExportPanel from './ImportExportPanel.jsx';
 
@@ -11,6 +11,7 @@ const SettingsPanel = () => {
   const [showConfirmWipe, setShowConfirmWipe] = useState(false);
   const [importing, setImporting] = useState(false);
   const [notes, setNotes] = useState([]);
+  const [customThemes, setCustomThemes] = useState([]);
   
   // Tag management state
   const [tags, setTags] = useState([]);
@@ -27,10 +28,16 @@ const SettingsPanel = () => {
     setRevisionDays(parseInt(savedDays, 10));
     setMinimapPosition(savedPosition);
     
-    // Load tags and notes
+    // Load tags, notes, and custom themes
     loadTags();
     loadNotes();
+    loadCustomThemes();
   }, []);
+  
+  const loadCustomThemes = () => {
+    const themes = getCustomThemes();
+    setCustomThemes(themes);
+  };
   
   const loadNotes = async () => {
     const allNotes = await storage.getAllNotes();
@@ -154,6 +161,7 @@ const SettingsPanel = () => {
       
       localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(customThemes));
       alert(`Theme "${themeData.name}" imported successfully!`);
+      loadCustomThemes(); // Refresh the list
       
     } catch (error) {
       console.error('Error importing theme:', error);
@@ -161,6 +169,32 @@ const SettingsPanel = () => {
     } finally {
       setImporting(false);
       event.target.value = ''; // Reset file input
+    }
+  };
+  
+  const handleApplyCustomTheme = (themeId) => {
+    applyTheme(themeId);
+    // Dispatch event to notify other components
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { themeId } }));
+  };
+  
+  const handleDeleteCustomTheme = (themeId, themeName) => {
+    if (!window.confirm(`Delete theme "${themeName}"? This cannot be undone.`)) {
+      return;
+    }
+    
+    const success = deleteCustomTheme(themeId);
+    if (success) {
+      loadCustomThemes(); // Refresh the list
+      
+      // If the deleted theme was active, switch to default
+      const currentTheme = localStorage.getItem('thoughtweaver_theme');
+      if (currentTheme === themeId) {
+        applyTheme('light');
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { themeId: 'light' } }));
+      }
+    } else {
+      alert('Error deleting theme');
     }
   };
 
@@ -462,6 +496,47 @@ const SettingsPanel = () => {
               {importing ? 'Importing...' : 'Import Theme'}
             </div>
           </label>
+          
+          {/* Custom Themes List */}
+          {customThemes.length > 0 && (
+            <div className="mt-6 pt-6" style={{ borderTop: '1px solid var(--border-color)' }}>
+              <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>
+                Custom Themes ({customThemes.length})
+              </h4>
+              <div className="space-y-2">
+                {customThemes.map(theme => (
+                  <div 
+                    key={theme.id}
+                    className="flex items-center justify-between p-3 rounded-lg"
+                    style={{ 
+                      backgroundColor: 'var(--bg-primary)',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: 'var(--border-color)'
+                    }}
+                  >
+                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                      {theme.name}
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleApplyCustomTheme(theme.id)}
+                        className="px-3 py-1 bg-primary-500 text-white text-sm rounded hover:bg-primary-600 transition-colors duration-200"
+                      >
+                        Apply
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCustomTheme(theme.id, theme.name)}
+                        className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors duration-200"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
