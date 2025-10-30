@@ -12,7 +12,10 @@
 }
 
 /* Theme-specific CSS classes */
-.theme-light {
+/* Each theme has both -light and -dark variants */
+
+/* Classic Theme */
+.theme-classic-light {
   --bg-primary: #f9fafb;
   --bg-secondary: #ffffff;
   --text-primary: #1f2937;
@@ -20,23 +23,7 @@
   --border-color: #e5e7eb;
 }
 
-.theme-sky {
-  --bg-primary: #e0f2fe;
-  --bg-secondary: #ffffff;
-  --text-primary: #0c4a6e;
-  --text-secondary: #0369a1;
-  --border-color: #bae6fd;
-}
-
-.theme-rose {
-  --bg-primary: #fce7f3;
-  --bg-secondary: #ffffff;
-  --text-primary: #831843;
-  --text-secondary: #be185d;
-  --border-color: #f9a8d4;
-}
-
-.theme-dark {
+.theme-classic-dark {
   --bg-primary: #1f2937;
   --bg-secondary: #374151;
   --text-primary: #f9fafb;
@@ -44,7 +31,16 @@
   --border-color: #4b5563;
 }
 
-.theme-midnight {
+/* Sky Blue Theme */
+.theme-sky-light {
+  --bg-primary: #e0f2fe;
+  --bg-secondary: #ffffff;
+  --text-primary: #0c4a6e;
+  --text-secondary: #0369a1;
+  --border-color: #bae6fd;
+}
+
+.theme-sky-dark {
   --bg-primary: #0c1e3d;
   --bg-secondary: #1e3a5f;
   --text-primary: #dbeafe;
@@ -52,52 +48,21 @@
   --border-color: #1e40af;
 }
 
-.theme-pitch {
-  --bg-primary: #000000;
-  --bg-secondary: #111827;
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --border-color: #374151;
-}
-
-.theme-forest {
-  --bg-primary: #f0fdf4;
+/* Rose Pink Theme */
+.theme-rose-light {
+  --bg-primary: #fce7f3;
   --bg-secondary: #ffffff;
-  --text-primary: #14532d;
-  --text-secondary: #15803d;
-  --border-color: #bbf7d0;
+  --text-primary: #831843;
+  --text-secondary: #be185d;
+  --border-color: #f9a8d4;
 }
 
-.theme-sunset {
-  --bg-primary: #fff7ed;
-  --bg-secondary: #ffffff;
-  --text-primary: #7c2d12;
-  --text-secondary: #c2410c;
-  --border-color: #fed7aa;
-}
-
-.theme-purple-haze {
-  --bg-primary: #faf5ff;
-  --bg-secondary: #ffffff;
-  --text-primary: #581c87;
-  --text-secondary: #7e22ce;
-  --border-color: #e9d5ff;
-}
-
-.theme-ocean-deep {
-  --bg-primary: #083344;
-  --bg-secondary: #155e75;
-  --text-primary: #cffafe;
-  --text-secondary: #67e8f9;
-  --border-color: #0e7490;
-}
-
-.theme-mocha {
-  --bg-primary: #451a03;
-  --bg-secondary: #1c1917;
-  --text-primary: #fef3c7;
-  --text-secondary: #fcd34d;
-  --border-color: #44403c;
+.theme-rose-dark {
+  --bg-primary: #500724;
+  --bg-secondary: #881337;
+  --text-primary: #fce7f3;
+  --text-secondary: #fbcfe8;
+  --border-color: #9f1239;
 }
 
 /* Base Styles */
@@ -298,48 +263,28 @@ button:not(:disabled) {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.theme-light .cytoscape-container {
+.theme-classic-light .cytoscape-container {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
-.theme-sky .cytoscape-container {
-  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-}
-
-.theme-rose .cytoscape-container {
-  background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%);
-}
-
-.theme-dark .cytoscape-container {
+.theme-classic-dark .cytoscape-container {
   background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
 }
 
-.theme-midnight .cytoscape-container {
+.theme-sky-light .cytoscape-container {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+}
+
+.theme-sky-dark .cytoscape-container {
   background: linear-gradient(135deg, #0c1e3d 0%, #1e3a5f 100%);
 }
 
-.theme-pitch .cytoscape-container {
-  background: linear-gradient(135deg, #000000 0%, #111827 100%);
+.theme-rose-light .cytoscape-container {
+  background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%);
 }
 
-.theme-forest .cytoscape-container {
-  background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
-}
-
-.theme-sunset .cytoscape-container {
-  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
-}
-
-.theme-purple-haze .cytoscape-container {
-  background: linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%);
-}
-
-.theme-ocean-deep .cytoscape-container {
-  background: linear-gradient(135deg, #083344 0%, #155e75 100%);
-}
-
-.theme-mocha .cytoscape-container {
-  background: linear-gradient(135deg, #451a03 0%, #1c1917 100%);
+.theme-rose-dark .cytoscape-container {
+  background: linear-gradient(135deg, #500724 0%, #881337 100%);
 }
 
 /* Responsive Design Helpers */

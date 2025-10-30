@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { storage } from '../utils/storage.js';
-import { THEMES, getTheme, getCustomThemes, deleteCustomTheme, applyTheme, exportThemeConfig, importThemeConfig, validateThemeConfig } from '../utils/themes.js';
+import { THEME_BASES, getCustomThemeBases, getAllThemeBases, getCurrentThemeBase, changeThemeBase, deleteCustomTheme, exportThemeConfig, importThemeConfig, validateThemeConfig } from '../utils/themes.js';
 import { tagManager } from '../utils/tagManager.js';
 import ImportExportPanel from './ImportExportPanel.jsx';
 
@@ -35,7 +35,7 @@ const SettingsPanel = () => {
   }, []);
   
   const loadCustomThemes = () => {
-    const themes = getCustomThemes();
+    const themes = getCustomThemeBases();
     setCustomThemes(themes);
   };
   
@@ -115,24 +115,27 @@ const SettingsPanel = () => {
   };
 
   const handleExportTheme = () => {
-    const currentThemeId = localStorage.getItem('thoughtweaver_theme') || 'light';
-    const theme = getTheme(currentThemeId);
+    const currentBaseId = getCurrentThemeBase();
     
     // Check if this is a default theme
-    const isDefaultTheme = THEMES.some(t => t.id === theme.id);
+    const isDefaultTheme = THEME_BASES.some(t => t.id === currentBaseId);
     if (isDefaultTheme) {
       alert('This is a default theme. You can only export custom imported themes.');
       return;
     }
     
-    const themeJson = exportThemeConfig(theme);
+    const themeJson = exportThemeConfig(currentBaseId);
+    if (!themeJson) {
+      alert('Could not export theme');
+      return;
+    }
     
     // Create download
     const blob = new Blob([themeJson], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `thoughtweaver-theme-${theme.id}-${Date.now()}.json`;
+    a.download = `thoughtweaver-theme-${currentBaseId}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -146,29 +149,43 @@ const SettingsPanel = () => {
     setImporting(true);
     try {
       const text = await file.text();
-      const themeData = JSON.parse(text);
+      const themeVariants = importThemeConfig(text);
       
-      if (!validateThemeConfig(themeData)) {
-        alert('Invalid theme file format');
+      if (!themeVariants || themeVariants.length === 0) {
+        alert('Invalid theme file format. Themes must include both -light and -dark variants.');
         return;
       }
 
-      // Save custom theme
+      // Save custom theme variants
       const customThemes = JSON.parse(localStorage.getItem('thoughtweaver_custom_themes') || '[]');
       
-      // Check if theme with same ID exists
-      const existingIndex = customThemes.findIndex(t => t.id === themeData.id);
-      if (existingIndex >= 0) {
-        if (!window.confirm(`Theme "${themeData.name}" already exists. Replace it?`)) {
+      // Get base name from first variant
+      const baseId = themeVariants[0].id.replace(/-light$|-dark$/, '');
+      const themeName = themeVariants[0].name.replace(/ Light$| Dark$/, '');
+      
+      // Check if theme base already exists
+      const existingVariants = customThemes.filter(t => {
+        const base = t.id.replace(/-light$|-dark$/, '');
+        return base === baseId;
+      });
+      
+      if (existingVariants.length > 0) {
+        if (!window.confirm(`Theme "${themeName}" already exists. Replace it?`)) {
           return;
         }
-        customThemes[existingIndex] = themeData;
+        // Remove old variants
+        const filtered = customThemes.filter(t => {
+          const base = t.id.replace(/-light$|-dark$/, '');
+          return base !== baseId;
+        });
+        filtered.push(...themeVariants);
+        localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(filtered));
       } else {
-        customThemes.push(themeData);
+        customThemes.push(...themeVariants);
+        localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(customThemes));
       }
       
-      localStorage.setItem('thoughtweaver_custom_themes', JSON.stringify(customThemes));
-      alert(`Theme "${themeData.name}" imported successfully!`);
+      alert(`Theme "${themeName}" imported successfully!`);
       loadCustomThemes(); // Refresh the list
       
     } catch (error) {
@@ -180,27 +197,20 @@ const SettingsPanel = () => {
     }
   };
   
-  const handleApplyCustomTheme = (themeId) => {
-    applyTheme(themeId);
+  const handleApplyThemeBase = (baseId) => {
+    changeThemeBase(baseId);
     // Dispatch event to notify other components
-    window.dispatchEvent(new CustomEvent('themechange', { detail: { themeId } }));
+    window.dispatchEvent(new CustomEvent('themeBaseChange', { detail: { baseId } }));
   };
   
-  const handleDeleteCustomTheme = (themeId, themeName) => {
-    if (!window.confirm(`Delete theme "${themeName}"? This cannot be undone.`)) {
+  const handleDeleteCustomTheme = (baseId, themeName) => {
+    if (!window.confirm(`Delete theme "${themeName}"? This will remove both light and dark variants. This cannot be undone.`)) {
       return;
     }
     
-    const success = deleteCustomTheme(themeId);
+    const success = deleteCustomTheme(baseId);
     if (success) {
       loadCustomThemes(); // Refresh the list
-      
-      // If the deleted theme was active, switch to default
-      const currentTheme = localStorage.getItem('thoughtweaver_theme');
-      if (currentTheme === themeId) {
-        applyTheme('light');
-        window.dispatchEvent(new CustomEvent('themechange', { detail: { themeId: 'light' } }));
-      }
     } else {
       alert('Error deleting theme');
     }
@@ -528,7 +538,7 @@ const SettingsPanel = () => {
                     </span>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleApplyCustomTheme(theme.id)}
+                        onClick={() => handleApplyThemeBase(theme.id)}
                         className="px-3 py-1 bg-primary-500 text-white text-sm rounded hover:bg-primary-600 transition-colors duration-200"
                       >
                         Apply

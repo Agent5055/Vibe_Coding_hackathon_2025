@@ -1,162 +1,262 @@
-# ThoughtWeaver Themes
+# ThoughtWeaver Custom Themes Guide
 
-ThoughtWeaver offers **6 beautiful themes** to personalize your learning experience. Choose from 3 light themes and 3 dark themes, each with its own unique color palette and aesthetic.
+Welcome to the ThoughtWeaver custom themes documentation! This guide will help you create and share your own beautiful themes for ThoughtWeaver.
 
-![Theme System Overview](./docs/screenshots/theme-overview.png)
+## Theme System Overview
 
-## Available Themes
+ThoughtWeaver uses a **dual-variant theme system** where each theme consists of two variants:
+- **Light mode** variant (e.g., `mytheme-light`)
+- **Dark mode** variant (e.g., `mytheme-dark`)
+
+The theme toggle button in the header switches between light and dark modes of the currently active theme, while the Settings panel allows you to select which theme base to use.
+
+## Theme Structure
+
+Each theme variant is defined as a JSON object with the following structure:
+
+```json
+{
+  "id": "themename-light",
+  "name": "Theme Name Light",
+  "color": "blue"
+}
+```
+
+### Required Fields
+
+- **`id`** (string): Unique identifier for the theme variant
+  - Must end with `-light` or `-dark`
+  - Example: `ocean-light`, `ocean-dark`
+  
+- **`name`** (string): Display name for the theme variant
+  - Should include "Light" or "Dark" suffix
+  - Example: "Ocean Blue Light", "Ocean Blue Dark"
+  
+- **`color`** (string): Accent color for UI elements
+  - Options: `blue`, `pink`, `purple`, `green`, `orange`, `gray`, `red`, `yellow`
+  - Used for icons and highlights
+
+## Creating a Custom Theme
+
+### Step 1: Define Your Base Theme Name
+
+Choose a unique base name for your theme (e.g., "forest", "sunset", "ocean").
+
+### Step 2: Create Light and Dark Variants
+
+You need to create **two variants** for your theme - one for light mode and one for dark mode.
+
+#### Example: "Forest" Theme
+
+**File: forest-theme.json**
+```json
+[
+  {
+    "id": "forest-light",
+    "name": "Forest Light",
+    "color": "green"
+  },
+  {
+    "id": "forest-dark",
+    "name": "Forest Dark",
+    "color": "green"
+  }
+]
+```
+
+### Step 3: Define CSS Variables
+
+Create a CSS file with your theme's color scheme. ThoughtWeaver uses CSS custom properties for theming:
+
+**File: forest-theme.css**
+```css
+/* Forest Light Theme */
+.theme-forest-light {
+  --bg-primary: #f0fdf4;
+  --bg-secondary: #ffffff;
+  --text-primary: #14532d;
+  --text-secondary: #15803d;
+  --border-color: #bbf7d0;
+}
+
+/* Forest Dark Theme */
+.theme-forest-dark {
+  --bg-primary: #14532d;
+  --bg-secondary: #166534;
+  --text-primary: #f0fdf4;
+  --text-secondary: #bbf7d0;
+  --border-color: #15803d;
+}
+
+/* Optional: Cytoscape mind map gradient */
+.theme-forest-light .cytoscape-container {
+  background: linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%);
+}
+
+.theme-forest-dark .cytoscape-container {
+  background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+}
+```
+
+### CSS Variable Reference
+
+| Variable | Purpose | Example (Light) | Example (Dark) |
+|----------|---------|-----------------|----------------|
+| `--bg-primary` | Main background color | `#f9fafb` | `#1f2937` |
+| `--bg-secondary` | Card/panel background | `#ffffff` | `#374151` |
+| `--text-primary` | Primary text color | `#1f2937` | `#f9fafb` |
+| `--text-secondary` | Secondary/muted text | `#6b7280` | `#d1d5db` |
+| `--border-color` | Border and divider color | `#e5e7eb` | `#4b5563` |
+
+## Importing Your Theme
+
+1. Open ThoughtWeaver
+2. Go to **Settings** (⚙️ icon)
+3. Scroll to **Theme Management** section
+4. Click **Import Theme**
+5. Select your theme JSON file (must contain both light and dark variants)
+6. Your theme will appear in the **Custom Themes** list
+
+## Exporting Themes
+
+To share your custom theme:
+
+1. Make sure your custom theme is currently active
+2. Go to **Settings** → **Theme Management**
+3. Click **Export Current Theme**
+4. Save the JSON file
+5. Share it with others!
+
+## Theme Naming Best Practices
+
+### Base Theme Names
+- Use lowercase with hyphens
+- Keep it short and memorable
+- Examples: `ocean`, `sunset`, `mocha`, `lavender`
+
+### Variant IDs
+- Always use the pattern: `basetheme-light` and `basetheme-dark`
+- Examples: `ocean-light`, `ocean-dark`
+
+### Display Names
+- Use Title Case
+- Include "Light" or "Dark" suffix
+- Examples: "Ocean Light", "Ocean Dark"
+
+## Example Themes
+
+### Minimal Theme
+```json
+[
+  {
+    "id": "minimal-light",
+    "name": "Minimal Light",
+    "color": "gray"
+  },
+  {
+    "id": "minimal-dark",
+    "name": "Minimal Dark",
+    "color": "gray"
+  }
+]
+```
+
+### Vibrant Theme
+```json
+[
+  {
+    "id": "vibrant-light",
+    "name": "Vibrant Light",
+    "color": "purple"
+  },
+  {
+    "id": "vibrant-dark",
+    "name": "Vibrant Dark",
+    "color": "purple"
+  }
+]
+```
+
+## Color Palette Guidelines
 
 ### Light Themes
-
-#### 🌞 Classic Light
-The default light theme with a clean, professional look featuring warm gray tones and excellent readability.
-
-- **Color Palette**: Soft grays with white cards
-- **Best For**: Extended reading sessions, professional documentation
-- **Icon**: Orange sun
-
-![Classic Light Theme](./docs/screenshots/theme-light.png)
-
----
-
-#### 🌞 Sky Blue
-A refreshing light theme with calming blue tones that evoke clarity and focus.
-
-- **Color Palette**: Light blue background with white cards
-- **Best For**: Creative brainstorming, morning work sessions
-- **Icon**: Blue sun
-
-![Sky Blue Theme](./docs/screenshots/theme-sky.png)
-
----
-
-#### 🌞 Rose Pink
-A gentle light theme with soft pink hues for a warm and inviting atmosphere.
-
-- **Color Palette**: Subtle pink background with white cards
-- **Best For**: Personal journaling, creative writing
-- **Icon**: Pink sun
-
-![Rose Pink Theme](./docs/screenshots/theme-rose.png)
-
----
+- Use light backgrounds (#f0-#ff range)
+- Use dark text for contrast (#1f-#3f range)
+- Ensure WCAG AA contrast ratio (4.5:1 minimum)
 
 ### Dark Themes
+- Use dark backgrounds (#0c-#2f range)
+- Use light text for contrast (#d1-#ff range)
+- Maintain comfortable brightness (not pure black/white)
 
-#### 🌙 Slate Dark
-A modern dark theme with balanced contrast, perfect for reducing eye strain during evening work.
+## Tips for Great Themes
 
-- **Color Palette**: Dark gray background with slate cards
-- **Best For**: Night-time study sessions, reducing eye fatigue
-- **Icon**: Yellow moon
+1. **Test Both Variants**: Ensure both light and dark modes look great
+2. **Check Contrast**: Text should be easily readable
+3. **Consistency**: Use similar color families for both variants
+4. **Accessibility**: Consider users with visual impairments
+5. **Mind Map**: Don't forget to style the Cytoscape mind map gradient!
 
-![Slate Dark Theme](./docs/screenshots/theme-dark.png)
+## Troubleshooting
 
----
+### Theme Not Importing
+- Ensure JSON is valid (use a JSON validator)
+- Check that both `-light` and `-dark` variants are included
+- Verify all required fields are present
 
-#### 🌙 Midnight Blue
-An elegant dark theme with deep blue tones that create a focused, immersive environment.
+### Colors Not Showing
+- Make sure CSS variables are defined
+- Check that class names match the theme IDs
+- Verify CSS file is in the correct location
 
-- **Color Palette**: Dark navy background with blue-tinted cards
-- **Best For**: Deep focus work, late-night coding
-- **Icon**: Blue moon
+### Theme Deleted Accidentally
+- If you have the JSON file, just re-import it
+- ThoughtWeaver includes failsafe: deleting active theme reverts to default
 
-![Midnight Blue Theme](./docs/screenshots/theme-midnight.png)
+## Sharing Your Themes
 
----
+Want to share your theme with the community?
+1. Export your theme as JSON
+2. Create a matching CSS file
+3. Share on GitHub, Discord, or social media
+4. Tag `#ThoughtWeaverThemes`
 
-#### 🌙 Pitch Black
-The ultimate dark theme with true black background for maximum contrast and OLED-friendly design.
+## Default Themes Reference
 
-- **Color Palette**: Pure black background with charcoal cards
-- **Best For**: OLED displays, minimal distraction, cinema-like focus
-- **Icon**: Orange moon
+ThoughtWeaver comes with 3 built-in themes:
 
-![Pitch Black Theme](./docs/screenshots/theme-pitch.png)
+1. **Classic** - Traditional gray tones
+   - `classic-light`: Clean and professional
+   - `classic-dark`: Comfortable slate gray
 
----
+2. **Sky** - Blue tones
+   - `sky-light`: Light blue and white
+   - `sky-dark`: Deep midnight blue
 
-## How to Use Themes
+3. **Rose** - Pink tones
+   - `rose-light`: Soft rose pink
+   - `rose-dark`: Deep rose crimson
 
-### Switching Themes
+## Advanced: CSS Customization
 
-1. **Locate the Theme Toggle**: Find the theme button in the top-right corner of the application header
-2. **Click to Cycle**: Click the button to cycle through all 6 themes in order
-3. **Automatic Save**: Your theme preference is automatically saved to your browser's local storage
-4. **Persistent Across Sessions**: Your chosen theme will be remembered when you return to the application
+For advanced users, you can add custom CSS beyond the basic variables:
 
-![Theme Toggle Button](./docs/screenshots/theme-toggle.png)
+```css
+/* Custom styling for specific elements */
+.theme-mytheme-light .note-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-### Theme Toggle Button
-
-The theme toggle button displays a dynamic icon that reflects the current theme:
-- **Sun Icon**: Displayed for light themes (Classic Light, Sky Blue, Rose Pink)
-- **Moon Icon**: Displayed for dark themes (Slate Dark, Midnight Blue, Pitch Black)
-- **Color-Coded**: Each theme has a unique icon color for easy identification
-
-## Technical Details
-
-### Theme Implementation
-
-ThoughtWeaver's theme system is built with modern CSS variables and React state management:
-
-```javascript
-// Themes are defined in src/utils/themes.js
-export const THEMES = [
-  { id: 'light', name: 'Classic Light', icon: 'sun', color: 'orange' },
-  { id: 'sky', name: 'Sky Blue', icon: 'sun', color: 'blue' },
-  { id: 'rose', name: 'Rose Pink', icon: 'sun', color: 'pink' },
-  { id: 'dark', name: 'Slate Dark', icon: 'moon', color: 'yellow' },
-  { id: 'midnight', name: 'Midnight Blue', icon: 'moon', color: 'blue' },
-  { id: 'pitch', name: 'Pitch Black', icon: 'moon', color: 'orange' }
-];
+.theme-mytheme-dark .note-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
 ```
 
-### CSS Variables
+## Questions or Issues?
 
-Each theme applies CSS custom properties to the document root:
-- `--bg-primary`: Main background color
-- `--bg-secondary`: Card and panel backgrounds
-- `--text-primary`: Primary text color
-- `--text-secondary`: Secondary text color
-- `--border-color`: Border and divider colors
-- `--accent-color`: Interactive elements and highlights
+If you encounter any problems or have questions about creating themes:
+- Check the GitHub Issues page
+- Join our community Discord
+- Read the main README.md
 
-### Theme Persistence
-
-Your theme preference is stored in the browser's localStorage:
-```javascript
-localStorage.setItem('thoughtweaver_theme', themeId);
-```
-
-When you return to the application, your saved theme is automatically loaded and applied.
-
-## Accessibility Considerations
-
-All themes are designed with accessibility in mind:
-- **Sufficient Contrast**: All text meets WCAG 2.1 AA standards for contrast ratios
-- **Color Independence**: Information is never conveyed by color alone
-- **Keyboard Navigation**: Theme toggle is fully accessible via keyboard
-- **Screen Reader Support**: Theme changes are announced to assistive technologies
-
-## Performance
-
-The theme system is optimized for performance:
-- **CSS-Only Switching**: Theme changes use CSS classes, no re-renders required
-- **Minimal Bundle Impact**: Theme definitions add <2KB to bundle size
-- **Instant Apply**: Theme switching is instantaneous with no flicker
-- **Efficient Storage**: Only theme ID is stored (not entire theme object)
-
-## Customization
-
-Want to add your own theme? The theme system is easily extensible:
-
-1. Add your theme definition to `src/utils/themes.js`
-2. Define CSS variables for your theme in `src/index.css`
-3. Add the theme class selector (e.g., `.theme-yourtheme`)
-4. Your theme will automatically appear in the cycle
-
----
-
-**Enjoy personalizing your ThoughtWeaver experience with themes that match your mood and workflow!** 🎨
-
+Happy theming! 🎨
