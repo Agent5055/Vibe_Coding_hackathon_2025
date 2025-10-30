@@ -57,6 +57,13 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
 
   const currentViewMode = viewModeOptions.find(v => v.id === viewMode) || viewModeOptions[3];
 
+  // Cycle to next view mode (for compact layout button)
+  const handleCycleViewMode = () => {
+    const currentIndex = viewModeOptions.findIndex(v => v.id === viewMode);
+    const nextIndex = (currentIndex + 1) % viewModeOptions.length;
+    handleViewModeChange(viewModeOptions[nextIndex].id);
+  };
+
   // Get all unique tags from notes
   const allTags = useMemo(() => {
     const tagSet = new Set();
@@ -169,45 +176,59 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
             </div>
           </div>
 
-          {/* View Mode Dropdown */}
-          <div className="relative view-mode-dropdown">
+          {/* View Mode Selector - Dropdown for Cozy, Button for Compact */}
+          {currentLayout === 'cozy' ? (
+            <div className="relative view-mode-dropdown">
+              <button
+                onClick={() => setShowViewDropdown(!showViewDropdown)}
+                className="flex items-center gap-2 px-3 py-3 rounded-lg hover:opacity-80 focus:ring-2 focus:ring-primary-500 transition-colors duration-200"
+                style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={currentViewMode.icon} />
+                </svg>
+                <span className="text-sm font-medium">{currentViewMode.name}</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {showViewDropdown && (
+                <div 
+                  className="absolute top-full mt-1 right-0 rounded-lg shadow-lg overflow-hidden z-10 min-w-[160px]"
+                  style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}
+                >
+                  {viewModeOptions.map(option => (
+                    <button
+                      key={option.id}
+                      onClick={() => handleViewModeChange(option.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors duration-200 ${
+                        viewMode === option.id ? 'bg-primary-500 text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                      style={{ color: viewMode === option.id ? undefined : 'var(--text-primary)' }}
+                    >
+                      <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={option.icon} />
+                      </svg>
+                      <span className="text-sm font-medium">{option.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
             <button
-              onClick={() => setShowViewDropdown(!showViewDropdown)}
+              onClick={handleCycleViewMode}
               className="flex items-center gap-2 px-3 py-3 rounded-lg hover:opacity-80 focus:ring-2 focus:ring-primary-500 transition-colors duration-200"
               style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
+              title={`Current: ${currentViewMode.name} - Click to cycle`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={currentViewMode.icon} />
               </svg>
               <span className="text-sm font-medium">{currentViewMode.name}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
             </button>
-            
-            {showViewDropdown && (
-              <div 
-                className="absolute top-full mt-1 right-0 rounded-lg shadow-lg overflow-hidden z-10 min-w-[160px]"
-                style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}
-              >
-                {viewModeOptions.map(option => (
-                  <button
-                    key={option.id}
-                    onClick={() => handleViewModeChange(option.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors duration-200 ${
-                      viewMode === option.id ? 'bg-primary-500 text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                    style={{ color: viewMode === option.id ? undefined : 'var(--text-primary)' }}
-                  >
-                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={option.icon} />
-                    </svg>
-                    <span className="text-sm font-medium">{option.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          )}
 
           {/* Sort */}
           <div className="flex gap-2">
