@@ -354,8 +354,10 @@ export const storage = {
     try {
       const data = JSON.parse(jsonString);
       if (data.notes && Array.isArray(data.notes)) {
-        await storage.saveAllNotes(data.notes);
-        return { success: true, count: data.notes.length };
+        // Enhance each note before saving to ensure all required fields exist
+        const enhancedNotes = data.notes.map(note => enhanceNote(note));
+        await storage.saveAllNotes(enhancedNotes);
+        return { success: true, count: enhancedNotes.length };
       }
       return { success: false, error: 'Invalid data format' };
     } catch (error) {
