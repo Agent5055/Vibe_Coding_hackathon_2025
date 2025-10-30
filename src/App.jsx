@@ -23,8 +23,13 @@ function App() {
   // Load notes, theme, and layout on mount
   useEffect(() => {
     const loadData = async () => {
-      const loadedNotes = await storage.getAllNotes();
-      setNotes(loadedNotes);
+      try {
+        const loadedNotes = await storage.getAllNotes();
+        setNotes(loadedNotes || []);
+      } catch (error) {
+        console.error('Error loading notes:', error);
+        setNotes([]);
+      }
     };
     loadData();
 

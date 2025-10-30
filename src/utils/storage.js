@@ -35,8 +35,11 @@ const initStorage = async () => {
   }
 };
 
-// Initialize on module load
-initStorage();
+// Initialize on module load (non-blocking)
+initStorage().catch(err => {
+  console.error('Storage initialization error:', err);
+  useIndexedDB = false;
+});
 
 // Helper: Calculate word count
 const calculateWordCount = (text) => {
@@ -70,12 +73,20 @@ export const storage = {
         const notes = await indexedDBWrapper.getAllNotes();
         return notes.map(enhanceNote);
       } else {
+        // Fallback to LocalStorage
         const notes = localStorage.getItem(STORAGE_KEY);
         return notes ? JSON.parse(notes).map(enhanceNote) : [];
       }
     } catch (error) {
       console.error('Error loading notes:', error);
-      return [];
+      // Always fallback to LocalStorage on error
+      try {
+        const notes = localStorage.getItem(STORAGE_KEY);
+        return notes ? JSON.parse(notes).map(enhanceNote) : [];
+      } catch (fallbackError) {
+        console.error('LocalStorage fallback also failed:', fallbackError);
+        return [];
+      }
     }
   },
 
