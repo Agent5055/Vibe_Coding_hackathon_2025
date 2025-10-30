@@ -78,10 +78,12 @@ export const getNextTheme = (currentThemeId) => {
 export const applyTheme = (themeId) => {
   const theme = getTheme(themeId);
   
-  // Remove all theme classes
+  // Remove all theme classes (including custom themes)
   document.documentElement.classList.remove(
     'theme-light', 'theme-sky', 'theme-rose', 
-    'theme-dark', 'theme-midnight', 'theme-pitch'
+    'theme-dark', 'theme-midnight', 'theme-pitch',
+    'theme-forest', 'theme-sunset', 'theme-purple-haze',
+    'theme-ocean-deep', 'theme-mocha'
   );
   
   // Add current theme class

@@ -1,0 +1,11 @@
+{
+  "id": "forest",
+  "name": "Forest Green",
+  "icon": "sun",
+  "color": "green",
+  "bgClass": "bg-green-50",
+  "cardClass": "bg-white",
+  "textClass": "text-gray-900",
+  "borderClass": "border-green-200"
+}
+

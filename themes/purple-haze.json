@@ -1,0 +1,11 @@
+{
+  "id": "purple-haze",
+  "name": "Purple Haze",
+  "icon": "sun",
+  "color": "purple",
+  "bgClass": "bg-purple-50",
+  "cardClass": "bg-white",
+  "textClass": "text-gray-900",
+  "borderClass": "border-purple-200"
+}
+
