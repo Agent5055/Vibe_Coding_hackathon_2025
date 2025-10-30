@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { storage } from './utils/storage.js';
 import { extractNoteKeywords } from './utils/keywords.js';
+import { tagManager } from './utils/tagManager.js';
 import NoteForm from './components/NoteForm.jsx';
 import NoteList from './components/NoteList.jsx';
 import MindMap from './components/MindMap.jsx';
@@ -26,6 +27,9 @@ function App() {
       try {
         const loadedNotes = await storage.getAllNotes();
         setNotes(loadedNotes || []);
+        
+        // Sync existing tags from notes to managed tag list
+        await tagManager.syncTagsFromNotes();
       } catch (error) {
         console.error('Error loading notes:', error);
         setNotes([]);

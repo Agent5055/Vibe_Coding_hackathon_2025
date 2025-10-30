@@ -61,7 +61,12 @@ const enhanceNote = (note) => {
     lastOpened: note.lastOpened || note.updatedAt || note.createdAt,
     versions: note.versions || [],
     wordCount: note.wordCount || calculateWordCount(body),
-    readingTime: note.readingTime || calculateReadingTime(body)
+    readingTime: note.readingTime || calculateReadingTime(body),
+    revisionReminder: note.revisionReminder || {
+      enabled: false,
+      days: 7,
+      lastNotified: null
+    }
   };
 };
 

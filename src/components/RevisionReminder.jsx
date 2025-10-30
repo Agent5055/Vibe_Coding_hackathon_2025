@@ -1,20 +1,19 @@
 import { useMemo } from 'react';
 
 const RevisionReminder = ({ notes, onNoteClick }) => {
-  // Get revision days setting from localStorage (default: 7)
-  const revisionDays = useMemo(() => {
-    const saved = localStorage.getItem('thoughtweaver_revision_days');
-    return saved ? parseInt(saved, 10) : 7;
-  }, []);
-
-  // Find notes that need revision
+  // Find notes that need revision (using per-note settings)
   const notesToRevisit = useMemo(() => {
     if (!notes || notes.length === 0) return [];
 
     const now = new Date();
-    const cutoffTime = now.getTime() - (revisionDays * 24 * 60 * 60 * 1000);
 
     return notes.filter(note => {
+      // Only show notes with revision reminder enabled
+      if (!note.revisionReminder?.enabled) return false;
+      
+      const days = note.revisionReminder.days || 7;
+      const cutoffTime = now.getTime() - (days * 24 * 60 * 60 * 1000);
+      
       const lastOpened = note.lastOpened || note.updatedAt || note.createdAt;
       if (!lastOpened) return false;
       
@@ -25,7 +24,7 @@ const RevisionReminder = ({ notes, onNoteClick }) => {
       const bTime = new Date(b.lastOpened || b.updatedAt || b.createdAt).getTime();
       return aTime - bTime; // Oldest first
     });
-  }, [notes, revisionDays]);
+  }, [notes]);
 
   if (notesToRevisit.length === 0) {
     return null;
@@ -71,7 +70,7 @@ const RevisionReminder = ({ notes, onNoteClick }) => {
               To Revisit
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              {notesToRevisit.length} note{notesToRevisit.length !== 1 ? 's' : ''} haven't been opened in {revisionDays}+ days
+              {notesToRevisit.length} note{notesToRevisit.length !== 1 ? 's' : ''} ready for review
             </p>
           </div>
         </div>
@@ -87,6 +86,7 @@ const RevisionReminder = ({ notes, onNoteClick }) => {
         {notesToRevisit.slice(0, 5).map((note) => {
           const lastOpened = note.lastOpened || note.updatedAt || note.createdAt;
           const daysSince = getDaysSince(lastOpened);
+          const reminderDays = note.revisionReminder?.days || 7;
           
           return (
             <button
@@ -130,6 +130,9 @@ const RevisionReminder = ({ notes, onNoteClick }) => {
                 <div className="flex flex-col items-end gap-1 flex-shrink-0">
                   <span className="text-xs font-medium text-orange-600">
                     {daysSince} day{daysSince !== 1 ? 's' : ''} ago
+                  </span>
+                  <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    ({reminderDays}d reminder)
                   </span>
                   <svg 
                     className="w-4 h-4" 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { storage } from '../utils/storage.js';
 import { THEMES, getTheme, exportThemeConfig, importThemeConfig, validateThemeConfig } from '../utils/themes.js';
+import { tagManager } from '../utils/tagManager.js';
 
 const SettingsPanel = () => {
   const [layout, setLayout] = useState('cozy');
@@ -8,6 +9,11 @@ const SettingsPanel = () => {
   const [minimapPosition, setMinimapPosition] = useState('bottom-right');
   const [showConfirmWipe, setShowConfirmWipe] = useState(false);
   const [importing, setImporting] = useState(false);
+  
+  // Tag management state
+  const [tags, setTags] = useState([]);
+  const [newTagInput, setNewTagInput] = useState('');
+  const [tagUsage, setTagUsage] = useState({});
 
   useEffect(() => {
     // Load settings from localStorage
@@ -18,7 +24,52 @@ const SettingsPanel = () => {
     setLayout(savedLayout);
     setRevisionDays(parseInt(savedDays, 10));
     setMinimapPosition(savedPosition);
+    
+    // Load tags
+    loadTags();
   }, []);
+  
+  const loadTags = async () => {
+    const allTags = tagManager.getAllTags();
+    setTags(allTags);
+    
+    // Load usage counts for each tag
+    const usage = {};
+    for (const tag of allTags) {
+      usage[tag] = await tagManager.getTagUsage(tag);
+    }
+    setTagUsage(usage);
+  };
+  
+  const handleAddTag = () => {
+    const trimmed = newTagInput.trim();
+    if (!trimmed) return;
+    
+    if (tagManager.addTag(trimmed)) {
+      setNewTagInput('');
+      loadTags();
+    } else {
+      alert('Tag already exists or is invalid');
+    }
+  };
+  
+  const handleDeleteTag = async (tag) => {
+    const usage = tagUsage[tag] || 0;
+    
+    if (usage > 0) {
+      const confirmed = window.confirm(
+        `"${tag}" is used in ${usage} note${usage !== 1 ? 's' : ''}. Delete it from all notes and the tag list?`
+      );
+      
+      if (!confirmed) return;
+      
+      // Remove from all notes
+      await tagManager.removeTagFromAllNotes(tag);
+    }
+    
+    tagManager.deleteTag(tag);
+    loadTags();
+  };
 
   const handleLayoutChange = (newLayout) => {
     setLayout(newLayout);
@@ -226,7 +277,7 @@ const SettingsPanel = () => {
         </div>
       </div>
 
-      {/* Revision Reminder Settings */}
+      {/* Tag Management */}
       <div 
         className="rounded-xl p-6 shadow-sm"
         style={{ 
@@ -237,24 +288,79 @@ const SettingsPanel = () => {
         }}
       >
         <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-          Revision Reminders
+          Tag Management
         </h3>
         
-        <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-            Remind me to revisit notes after: <span className="text-primary-500">{revisionDays} days</span>
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="30"
-            value={revisionDays}
-            onChange={(e) => handleRevisionDaysChange(parseInt(e.target.value, 10))}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-            <span>1 day</span>
-            <span>30 days</span>
+        <div className="space-y-4">
+          {/* Add new tag */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newTagInput}
+              onChange={(e) => setNewTagInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+              placeholder="New tag name..."
+              className="flex-1 px-3 py-2 rounded-lg border"
+              style={{
+                backgroundColor: 'var(--bg-primary)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-primary)'
+              }}
+            />
+            <button
+              onClick={handleAddTag}
+              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200 whitespace-nowrap"
+            >
+              + Add Tag
+            </button>
+          </div>
+          
+          {/* Tag list */}
+          <div className="space-y-2">
+            {tags.length === 0 ? (
+              <p className="text-sm text-center py-4" style={{ color: 'var(--text-secondary)' }}>
+                No tags yet. Add your first tag above.
+              </p>
+            ) : (
+              tags.map(tag => {
+                const usage = tagUsage[tag] || 0;
+                return (
+                  <div 
+                    key={tag}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg"
+                    style={{
+                      backgroundColor: usage > 0 ? 'var(--bg-primary)' : 'transparent',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: 'var(--border-color)',
+                      opacity: usage > 0 ? 1 : 0.6
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span 
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-sm font-medium"
+                        style={{
+                          backgroundColor: 'var(--primary-500)',
+                          color: 'white'
+                        }}
+                      >
+                        {tag}
+                      </span>
+                      <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        {usage} note{usage !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteTag(tag)}
+                      className="text-red-500 hover:text-red-700 transition-colors duration-200 px-2 py-1"
+                      title="Delete tag"
+                    >
+                      ×
+                    </button>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
