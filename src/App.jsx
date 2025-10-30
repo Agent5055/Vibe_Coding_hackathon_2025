@@ -45,6 +45,16 @@ function App() {
     const savedLayout = localStorage.getItem('thoughtweaver_layout') || 'cozy';
     setLayoutMode(savedLayout);
     document.documentElement.classList.add(`layout-${savedLayout}`);
+
+    // Listen for notes updates (e.g., from pin toggle)
+    const handleNotesUpdated = () => {
+      loadData();
+    };
+    window.addEventListener('notesUpdated', handleNotesUpdated);
+
+    return () => {
+      window.removeEventListener('notesUpdated', handleNotesUpdated);
+    };
   }, []);
 
   // Update theme state when ThemeToggle changes theme

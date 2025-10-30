@@ -149,8 +149,8 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
     const updatedNote = { ...note, isPinned: !note.isPinned };
     await storage.updateNote(noteId, updatedNote);
     
-    // Refresh notes list
-    window.location.reload(); // Simple refresh for now
+    // Dispatch event to refresh notes without full page reload
+    window.dispatchEvent(new CustomEvent('notesUpdated'));
   };
 
   const formatDate = (dateString) => {

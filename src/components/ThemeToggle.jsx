@@ -29,7 +29,9 @@ const ThemeToggle = () => {
   }, []);
 
   const cycleTheme = () => {
-    const nextTheme = getNextTheme(currentTheme.id);
+    // Get current theme from localStorage as source of truth
+    const currentThemeId = localStorage.getItem('thoughtweaver_theme') || 'light';
+    const nextTheme = getNextTheme(currentThemeId);
     setCurrentTheme(nextTheme);
     applyTheme(nextTheme.id);
   };
