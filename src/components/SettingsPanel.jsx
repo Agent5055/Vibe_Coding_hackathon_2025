@@ -117,6 +117,14 @@ const SettingsPanel = () => {
   const handleExportTheme = () => {
     const currentThemeId = localStorage.getItem('thoughtweaver_theme') || 'light';
     const theme = getTheme(currentThemeId);
+    
+    // Check if this is a default theme
+    const isDefaultTheme = THEMES.some(t => t.id === theme.id);
+    if (isDefaultTheme) {
+      alert('This is a default theme. You can only export custom imported themes.');
+      return;
+    }
+    
     const themeJson = exportThemeConfig(theme);
     
     // Create download
@@ -503,7 +511,7 @@ const SettingsPanel = () => {
               <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>
                 Custom Themes ({customThemes.length})
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
                 {customThemes.map(theme => (
                   <div 
                     key={theme.id}

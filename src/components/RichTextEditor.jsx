@@ -11,11 +11,11 @@ const MenuBar = ({ editor }) => {
     return null;
   }
 
-  const buttonClass = "p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors";
+  const buttonClass = "p-2 rounded transition-colors";
   const activeClass = "bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-300";
 
   return (
-    <div className="border-b flex flex-wrap gap-1 p-2" style={{ borderColor: 'var(--border-color)' }}>
+    <div className="border-b flex flex-wrap gap-1 p-2" style={{ borderColor: 'var(--border-color)', backgroundColor: 'var(--bg-secondary)' }}>
       {/* Text Formatting */}
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -252,6 +252,11 @@ const RichTextEditor = ({ content, onChange, placeholder = "Write your thoughts 
       <style>{`
         .ProseMirror {
           outline: none;
+          color: var(--text-primary);
+        }
+        
+        .ProseMirror * {
+          color: inherit;
         }
         
         .ProseMirror p.is-editor-empty:first-child::before {
@@ -307,7 +312,8 @@ const RichTextEditor = ({ content, onChange, placeholder = "Write your thoughts 
         }
         
         .ProseMirror pre {
-          background-color: rgba(0, 0, 0, 0.05);
+          background-color: var(--bg-secondary);
+          border: 1px solid var(--border-color);
           border-radius: 0.5em;
           padding: 0.75em 1em;
           margin: 0.5em 0;

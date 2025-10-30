@@ -61,6 +61,23 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
     loadTags();
   }, [note, isOpen]);
 
+  // ESC key handler to close form
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && isOpen) {
+        onCancel();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isOpen, onCancel]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -152,14 +169,14 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
-        <div className="p-6" style={{ borderBottom: `1px solid var(--border-color)` }}>
+      <div className="rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+        <div className="p-6 flex-shrink-0" style={{ borderBottom: `1px solid var(--border-color)` }}>
           <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
             {note ? 'Edit Note' : 'Create New Note'}
           </h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
           <div>
             <label htmlFor="title" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               Title

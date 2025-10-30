@@ -87,7 +87,19 @@ export const getTheme = (themeId) => {
 // Get next theme in cycle (includes custom themes)
 export const getNextTheme = (currentThemeId) => {
   const allThemes = getAllThemes();
+  
+  // If no themes, return first default theme
+  if (allThemes.length === 0) {
+    return THEMES[0];
+  }
+  
   const currentIndex = allThemes.findIndex(theme => theme.id === currentThemeId);
+  
+  // If current theme not found, start from beginning
+  if (currentIndex === -1) {
+    return allThemes[0];
+  }
+  
   const nextIndex = (currentIndex + 1) % allThemes.length;
   return allThemes[nextIndex];
 };
