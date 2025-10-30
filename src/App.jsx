@@ -3,6 +3,8 @@ import { storage } from './utils/storage.js';
 import { extractNoteKeywords } from './utils/keywords.js';
 import { tagManager } from './utils/tagManager.js';
 import { applyTheme } from './utils/themes.js';
+import folderManager from './utils/folderManager.js';
+import notebookManager from './utils/notebookManager.js';
 import NoteForm from './components/NoteForm.jsx';
 import NoteList from './components/NoteList.jsx';
 import MindMap from './components/MindMap.jsx';
@@ -12,6 +14,9 @@ import SettingsPanel from './components/SettingsPanel.jsx';
 import LinkedNotes from './components/LinkedNotes.jsx';
 import VersionHistoryModal from './components/VersionHistoryModal.jsx';
 import NoteViewModal from './components/NoteViewModal.jsx';
+import FolderTreeSidebar from './components/FolderTreeSidebar.jsx';
+import CreateFolderModal from './components/CreateFolderModal.jsx';
+import CreateNotebookModal from './components/CreateNotebookModal.jsx';
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -23,8 +28,19 @@ function App() {
   const [versionHistoryNote, setVersionHistoryNote] = useState(null);
   const [layoutMode, setLayoutMode] = useState('cozy');
   const [viewingNote, setViewingNote] = useState(null);
+  
+  // Organization state
+  const [folders, setFolders] = useState([]);
+  const [notebooks, setNotebooks] = useState([]);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [selectedItem, setSelectedItem] = useState({ type: 'all-notes' });
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [isNotebookModalOpen, setIsNotebookModalOpen] = useState(false);
+  const [editingFolder, setEditingFolder] = useState(null);
+  const [editingNotebook, setEditingNotebook] = useState(null);
+  const [preselectedFolderId, setPreselectedFolderId] = useState(null);
 
-  // Load notes, theme, and layout on mount
+  // Load notes, theme, layout, and organization data on mount
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -33,6 +49,12 @@ function App() {
         
         // Sync existing tags from notes to managed tag list
         await tagManager.syncTagsFromNotes();
+        
+        // Load folders and notebooks
+        const loadedFolders = folderManager.getAll();
+        const loadedNotebooks = await notebookManager.getAll();
+        setFolders(loadedFolders);
+        setNotebooks(loadedNotebooks);
       } catch (error) {
         console.error('Error loading notes:', error);
         setNotes([]);
@@ -50,14 +72,33 @@ function App() {
     setLayoutMode(savedLayout);
     document.documentElement.classList.add(`layout-${savedLayout}`);
 
+    // Check for saved sidebar state
+    const savedSidebarState = localStorage.getItem('thoughtweaver_sidebar_collapsed');
+    if (savedSidebarState) {
+      setIsSidebarCollapsed(savedSidebarState === 'true');
+    }
+
     // Listen for notes updates (e.g., from pin toggle)
     const handleNotesUpdated = () => {
       loadData();
     };
+    const handleFoldersUpdated = () => {
+      const loadedFolders = folderManager.getAll();
+      setFolders(loadedFolders);
+    };
+    const handleNotebooksUpdated = async () => {
+      const loadedNotebooks = await notebookManager.getAll();
+      setNotebooks(loadedNotebooks);
+    };
+
     window.addEventListener('notesUpdated', handleNotesUpdated);
+    window.addEventListener('foldersUpdated', handleFoldersUpdated);
+    window.addEventListener('notebooksUpdated', handleNotebooksUpdated);
 
     return () => {
       window.removeEventListener('notesUpdated', handleNotesUpdated);
+      window.removeEventListener('foldersUpdated', handleFoldersUpdated);
+      window.removeEventListener('notebooksUpdated', handleNotebooksUpdated);
     };
   }, []);
 
@@ -86,6 +127,19 @@ function App() {
       clearInterval(interval);
     };
   }, [currentTheme]);
+
+  // Keyboard shortcut for sidebar toggle (Ctrl+B)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        handleToggleSidebar();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSidebarCollapsed]);
 
   const handleSaveNote = async (noteData) => {
     try {
@@ -219,6 +273,121 @@ function App() {
     }
   };
 
+  // Organization handlers
+  const handleToggleSidebar = () => {
+    const newState = !isSidebarCollapsed;
+    setIsSidebarCollapsed(newState);
+    localStorage.setItem('thoughtweaver_sidebar_collapsed', newState.toString());
+  };
+
+  const handleSelectItem = (item) => {
+    setSelectedItem(item);
+  };
+
+  const handleCreateFolder = () => {
+    setEditingFolder(null);
+    setIsFolderModalOpen(true);
+  };
+
+  const handleEditFolder = (folder) => {
+    setEditingFolder(folder);
+    setIsFolderModalOpen(true);
+  };
+
+  const handleSaveFolder = async (folderData) => {
+    try {
+      if (editingFolder) {
+        await folderManager.update(editingFolder.id, folderData);
+      } else {
+        await folderManager.create(folderData);
+      }
+      setIsFolderModalOpen(false);
+      setEditingFolder(null);
+    } catch (error) {
+      throw error; // Let modal handle the error
+    }
+  };
+
+  const handleDeleteFolder = async (folder) => {
+    if (window.confirm(`Are you sure you want to delete "${folder.name}"? All notebooks in this folder will also be deleted.`)) {
+      try {
+        // Delete all notebooks in this folder first
+        await notebookManager.deleteByFolder(folder.id);
+        // Delete the folder
+        folderManager.delete(folder.id);
+        // Reset selection if deleted folder was selected
+        if (selectedItem?.type === 'folder' && selectedItem?.id === folder.id) {
+          setSelectedItem({ type: 'all-notes' });
+        }
+      } catch (error) {
+        console.error('Error deleting folder:', error);
+        alert('Failed to delete folder');
+      }
+    }
+  };
+
+  const handleCreateNotebook = (folderId) => {
+    setPreselectedFolderId(folderId);
+    setEditingNotebook(null);
+    setIsNotebookModalOpen(true);
+  };
+
+  const handleEditNotebook = (notebook) => {
+    setEditingNotebook(notebook);
+    setPreselectedFolderId(null);
+    setIsNotebookModalOpen(true);
+  };
+
+  const handleSaveNotebook = async (notebookData) => {
+    try {
+      if (editingNotebook) {
+        await notebookManager.update(editingNotebook.id, notebookData);
+      } else {
+        await notebookManager.create(notebookData);
+      }
+      setIsNotebookModalOpen(false);
+      setEditingNotebook(null);
+      setPreselectedFolderId(null);
+    } catch (error) {
+      throw error; // Let modal handle the error
+    }
+  };
+
+  const handleDeleteNotebook = async (notebook) => {
+    if (window.confirm(`Are you sure you want to delete "${notebook.name}"?`)) {
+      try {
+        await notebookManager.delete(notebook.id);
+        // Reset selection if deleted notebook was selected
+        if (selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id) {
+          setSelectedItem({ type: 'all-notes' });
+        }
+        // Reload notes to update their notebook associations display
+        const updatedNotes = await storage.getAllNotes();
+        setNotes(updatedNotes);
+      } catch (error) {
+        console.error('Error deleting notebook:', error);
+        alert('Failed to delete notebook');
+      }
+    }
+  };
+
+  // Filter notes based on selected item
+  const getFilteredNotes = () => {
+    if (selectedItem.type === 'all-notes') {
+      return notes.filter(note => !note.notebookIds || note.notebookIds.length === 0);
+    } else if (selectedItem.type === 'notebook') {
+      return notes.filter(note => note.notebookIds && note.notebookIds.includes(selectedItem.id));
+    } else if (selectedItem.type === 'folder') {
+      const folderNotebookIds = notebooks
+        .filter(n => n.folderId === selectedItem.id)
+        .map(n => n.id);
+      return notes.filter(note => 
+        note.notebookIds && note.notebookIds.some(id => folderNotebookIds.includes(id))
+      );
+    }
+    return notes;
+  };
+
   const views = [
     { id: 'list', name: 'Notes', icon: '📝' },
     { id: 'mindmap', name: 'Mind Map', icon: '🧠' },
@@ -302,11 +471,35 @@ function App() {
         </div>
       </nav>
 
+      {/* Sidebar */}
+      <FolderTreeSidebar
+        notes={notes}
+        isCollapsed={isSidebarCollapsed}
+        onToggle={handleToggleSidebar}
+        selectedItem={selectedItem}
+        onSelectItem={handleSelectItem}
+        onCreateFolder={handleCreateFolder}
+        onCreateNotebook={handleCreateNotebook}
+        onEditFolder={handleEditFolder}
+        onEditNotebook={handleEditNotebook}
+        onDeleteFolder={handleDeleteFolder}
+        onDeleteNotebook={handleDeleteNotebook}
+      />
+
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main 
+        className="transition-all duration-300 px-4 sm:px-6 lg:px-8 py-8"
+        style={{ 
+          marginLeft: isSidebarCollapsed ? '3rem' : '18rem',
+          maxWidth: 'calc(100% - ' + (isSidebarCollapsed ? '3rem' : '18rem') + ')'
+        }}
+      >
         {activeView === 'list' && (
           <NoteList
-            notes={notes}
+            notes={getFilteredNotes()}
+            allNotes={notes}
+            notebooks={notebooks}
+            selectedItem={selectedItem}
             onEdit={handleEditNote}
             onDelete={handleDeleteNote}
             onView={handleViewNote}
@@ -318,6 +511,8 @@ function App() {
           <div className="h-[calc(100vh-200px)]">
             <MindMap
               notes={notes}
+              notebooks={notebooks}
+              selectedItem={selectedItem}
               onNodeClick={handleNodeClick}
               selectedNoteId={selectedNote?.id}
               currentTheme={currentTheme}
@@ -330,7 +525,14 @@ function App() {
         )}
 
         {activeView === 'settings' && (
-          <SettingsPanel />
+          <SettingsPanel 
+            folders={folders}
+            notebooks={notebooks}
+            onEditFolder={handleEditFolder}
+            onDeleteFolder={handleDeleteFolder}
+            onEditNotebook={handleEditNotebook}
+            onDeleteNotebook={handleDeleteNotebook}
+          />
         )}
       </main>
 
@@ -449,6 +651,8 @@ function App() {
       {/* Note Form Modal */}
       <NoteForm
         note={editingNote}
+        notebooks={notebooks}
+        folders={folders}
         onSave={handleSaveNote}
         onCancel={handleCloseForm}
         isOpen={isFormOpen}
@@ -462,6 +666,30 @@ function App() {
           onEdit={handleEditNote}
         />
       )}
+
+      {/* Folder Modal */}
+      <CreateFolderModal
+        isOpen={isFolderModalOpen}
+        onClose={() => {
+          setIsFolderModalOpen(false);
+          setEditingFolder(null);
+        }}
+        onSave={handleSaveFolder}
+        editFolder={editingFolder}
+      />
+
+      {/* Notebook Modal */}
+      <CreateNotebookModal
+        isOpen={isNotebookModalOpen}
+        onClose={() => {
+          setIsNotebookModalOpen(false);
+          setEditingNotebook(null);
+          setPreselectedFolderId(null);
+        }}
+        onSave={handleSaveNotebook}
+        editNotebook={editingNotebook}
+        preselectedFolderId={preselectedFolderId}
+      />
     </div>
   );
 }

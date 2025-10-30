@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 
-const FiltersPanel = ({ notes, cy, isOpen, onToggle }) => {
+const FiltersPanel = ({ notes, notebooks, selectedItem, cy, isOpen, onToggle }) => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [keywordRange, setKeywordRange] = useState([0, 20]);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [organizationFilter, setOrganizationFilter] = useState('all');
 
   // Get all unique tags from notes
   const allTags = useMemo(() => {
@@ -48,6 +49,26 @@ const FiltersPanel = ({ notes, cy, isOpen, onToggle }) => {
 
       let visible = true;
 
+      // Filter by organization (notebook/folder)
+      if (organizationFilter !== 'all') {
+        if (organizationFilter === 'unassigned') {
+          if (note.notebookIds && note.notebookIds.length > 0) {
+            visible = false;
+          }
+        } else if (organizationFilter.startsWith('notebook:')) {
+          const notebookId = organizationFilter.replace('notebook:', '');
+          if (!note.notebookIds || !note.notebookIds.includes(notebookId)) {
+            visible = false;
+          }
+        } else if (organizationFilter.startsWith('folder:')) {
+          const folderId = organizationFilter.replace('folder:', '');
+          const folderNotebookIds = notebooks?.filter(n => n.folderId === folderId).map(n => n.id) || [];
+          if (!note.notebookIds || !note.notebookIds.some(id => folderNotebookIds.includes(id))) {
+            visible = false;
+          }
+        }
+      }
+
       // Filter by tags
       if (selectedTags.length > 0) {
         const hasTag = note.tags?.some(tag => selectedTags.includes(tag));
@@ -82,7 +103,7 @@ const FiltersPanel = ({ notes, cy, isOpen, onToggle }) => {
       edge.style('display', visible ? 'element' : 'none');
     });
 
-  }, [cy, notes, selectedTags, keywordRange, dateRange]);
+  }, [cy, notes, notebooks, selectedTags, keywordRange, dateRange, organizationFilter]);
 
   const handleTagToggle = (tag) => {
     setSelectedTags(prev => 
@@ -96,11 +117,13 @@ const FiltersPanel = ({ notes, cy, isOpen, onToggle }) => {
     setSelectedTags([]);
     setKeywordRange([0, 20]);
     setDateRange({ start: '', end: '' });
+    setOrganizationFilter('all');
   };
 
   const hasActiveFilters = selectedTags.length > 0 || 
     keywordRange[0] > 0 || keywordRange[1] < 20 || 
-    dateRange.start || dateRange.end;
+    dateRange.start || dateRange.end ||
+    organizationFilter !== 'all';
 
   if (!isOpen) {
     return (
@@ -158,6 +181,37 @@ const FiltersPanel = ({ notes, cy, isOpen, onToggle }) => {
 
       {/* Content */}
       <div className="p-4 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 350px)' }}>
+        {/* Organization filter */}
+        <div>
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
+            Organization
+          </label>
+          <select
+            value={organizationFilter}
+            onChange={(e) => setOrganizationFilter(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+            style={{ 
+              backgroundColor: 'var(--bg-primary)',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)'
+            }}
+          >
+            <option value="all">All Notes</option>
+            <option value="unassigned">Unassigned Notes</option>
+            {notebooks && notebooks.length > 0 && (
+              <optgroup label="Notebooks">
+                {notebooks.map(notebook => (
+                  <option key={notebook.id} value={`notebook:${notebook.id}`}>
+                    {notebook.icon} {notebook.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+        </div>
+
         {/* Tags filter */}
         {allTags.length > 0 && (
           <div>

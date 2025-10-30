@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { storage } from '../utils/storage.js';
 import { THEME_BASES, getCustomThemeBases, getAllThemeBases, getCurrentThemeBase, changeThemeBase, deleteCustomTheme, exportThemeConfig, importThemeConfig, validateThemeConfig } from '../utils/themes.js';
 import { tagManager } from '../utils/tagManager.js';
+import folderManager from '../utils/folderManager.js';
+import notebookManager from '../utils/notebookManager.js';
 import ImportExportPanel from './ImportExportPanel.jsx';
 
-const SettingsPanel = () => {
+const SettingsPanel = ({ folders, notebooks, onEditFolder, onDeleteFolder, onEditNotebook, onDeleteNotebook }) => {
   const [layout, setLayout] = useState('cozy');
   const [revisionDays, setRevisionDays] = useState(7);
   const [minimapPosition, setMinimapPosition] = useState('bottom-right');
@@ -251,6 +253,151 @@ const SettingsPanel = () => {
         <p style={{ color: 'var(--text-secondary)' }}>
           Customize your ThoughtWeaver experience
         </p>
+      </div>
+
+      {/* Organization Settings */}
+      <div 
+        className="rounded-xl p-6 shadow-sm"
+        style={{ 
+          backgroundColor: 'var(--bg-secondary)',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: 'var(--border-color)'
+        }}
+      >
+        <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+          Organization
+        </h3>
+        
+        <div className="space-y-6">
+          {/* Folders */}
+          <div>
+            <h4 className="text-md font-medium mb-3" style={{ color: 'var(--text-primary)' }}>
+              Folders ({folders?.length || 0})
+            </h4>
+            {folders && folders.length > 0 ? (
+              <div className="space-y-2">
+                {folders.map((folder) => {
+                  const folderNotebooks = notebooks?.filter(nb => nb.folderId === folder.id) || [];
+                  return (
+                    <div
+                      key={folder.id}
+                      className="flex items-center justify-between p-3 rounded-lg"
+                      style={{ 
+                        backgroundColor: 'var(--bg-primary)',
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                        borderColor: 'var(--border-color)'
+                      }}
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <span className="text-2xl" style={{ color: folder.color }}>{folder.icon}</span>
+                        <div>
+                          <div className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                            {folder.name}
+                          </div>
+                          <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                            {folderNotebooks.length} notebook{folderNotebooks.length !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => onEditFolder(folder)}
+                          className="p-2 hover:opacity-70 transition-opacity"
+                          style={{ color: 'var(--text-primary)' }}
+                          title="Edit folder"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => onDeleteFolder(folder)}
+                          className="p-2 hover:opacity-70 transition-opacity text-red-500"
+                          title="Delete folder"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                No folders created yet. Use the sidebar to create folders.
+              </p>
+            )}
+          </div>
+
+          {/* Notebooks */}
+          <div>
+            <h4 className="text-md font-medium mb-3" style={{ color: 'var(--text-primary)' }}>
+              Notebooks ({notebooks?.length || 0})
+            </h4>
+            {notebooks && notebooks.length > 0 ? (
+              <div className="space-y-2">
+                {notebooks.map((notebook) => {
+                  const folder = folders?.find(f => f.id === notebook.folderId);
+                  return (
+                    <div
+                      key={notebook.id}
+                      className="flex items-center justify-between p-3 rounded-lg"
+                      style={{ 
+                        backgroundColor: 'var(--bg-primary)',
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                        borderColor: 'var(--border-color)'
+                      }}
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <span className="text-2xl" style={{ color: notebook.color }}>{notebook.icon}</span>
+                        <div>
+                          <div className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                            {notebook.name}
+                          </div>
+                          {folder && (
+                            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                              in {folder.icon} {folder.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => onEditNotebook(notebook)}
+                          className="p-2 hover:opacity-70 transition-opacity"
+                          style={{ color: 'var(--text-primary)' }}
+                          title="Edit notebook"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => onDeleteNotebook(notebook)}
+                          className="p-2 hover:opacity-70 transition-opacity text-red-500"
+                          title="Delete notebook"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                No notebooks created yet. Use the sidebar to create notebooks.
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Layout Settings */}

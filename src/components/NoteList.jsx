@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { storage } from '../utils/storage.js';
 import RevisionReminder from './RevisionReminder.jsx';
 
-const NoteList = ({ notes, onEdit, onDelete, onView, onDoubleClick }) => {
+const NoteList = ({ notes, allNotes, notebooks, selectedItem, onEdit, onDelete, onView, onDoubleClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortBy, setSortBy] = useState('updatedAt');
@@ -62,6 +62,12 @@ const NoteList = ({ notes, onEdit, onDelete, onView, onDoubleClick }) => {
     const currentIndex = viewModeOptions.findIndex(v => v.id === viewMode);
     const nextIndex = (currentIndex + 1) % viewModeOptions.length;
     handleViewModeChange(viewModeOptions[nextIndex].id);
+  };
+
+  // Get notebook names for a note
+  const getNoteNotebooks = (note) => {
+    if (!note.notebookIds || note.notebookIds.length === 0 || !notebooks) return [];
+    return notebooks.filter(nb => note.notebookIds.includes(nb.id));
   };
 
   // Get all unique tags from notes
@@ -338,21 +344,32 @@ const NoteList = ({ notes, onEdit, onDelete, onView, onDoubleClick }) => {
                       <h3 className="text-base font-semibold truncate group-hover:text-primary-600 transition-colors duration-200" style={{ color: 'var(--text-primary)' }}>
                         {note.title || 'Untitled'}
                       </h3>
-                      {note.tags && note.tags.length > 0 && (
-                        <div className="flex gap-1">
-                          {note.tags.slice(0, 2).map((tag, index) => (
-                            <span
-                              key={index}
-                              className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 text-xs rounded-full"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                          {note.tags.length > 2 && (
-                            <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>+{note.tags.length - 2}</span>
-                          )}
-                        </div>
-                      )}
+                      <div className="flex gap-2 flex-wrap">
+                        {getNoteNotebooks(note).slice(0, 2).map((notebook) => (
+                          <span
+                            key={notebook.id}
+                            className="px-2 py-0.5 text-xs rounded flex items-center gap-1"
+                            style={{ 
+                              backgroundColor: `${notebook.color}20`,
+                              color: notebook.color
+                            }}
+                          >
+                            <span className="text-xs">{notebook.icon}</span>
+                            <span>{notebook.name}</span>
+                          </span>
+                        ))}
+                        {note.tags && note.tags.length > 0 && note.tags.slice(0, 2).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 text-xs rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {note.tags && note.tags.length > 2 && (
+                          <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>+{note.tags.length - 2}</span>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>
                       {note.body || 'No content'}

@@ -4,11 +4,12 @@ import { storage } from '../utils/storage.js';
 import { tagManager } from '../utils/tagManager.js';
 import RichTextEditor from './RichTextEditor.jsx';
 
-const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
+const NoteForm = ({ note, notebooks, folders, onSave, onCancel, isOpen }) => {
   const [formData, setFormData] = useState({
     title: '',
     body: '',
     tags: [],
+    notebookIds: [],
     revisionReminder: {
       enabled: false,
       days: 7,
@@ -27,6 +28,7 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
         title: note.title || '',
         body: note.body || '',
         tags: note.tags || [],
+        notebookIds: note.notebookIds || [],
         revisionReminder: note.revisionReminder || {
           enabled: false,
           days: 7,
@@ -38,6 +40,7 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
         title: '',
         body: '',
         tags: [],
+        notebookIds: [],
         revisionReminder: {
           enabled: false,
           days: 7,
@@ -317,6 +320,115 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
               <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
                 💡 Create tags in Settings → Tag Management to organize your notes
               </p>
+            )}
+          </div>
+
+          {/* Notebooks */}
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
+              Notebooks
+            </label>
+            
+            {/* Selected Notebooks Display */}
+            {formData.notebookIds && formData.notebookIds.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {formData.notebookIds.map((notebookId) => {
+                  const notebook = notebooks?.find(nb => nb.id === notebookId);
+                  if (!notebook) return null;
+                  const folder = folders?.find(f => f.id === notebook.folderId);
+                  return (
+                    <span
+                      key={notebookId}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm"
+                      style={{
+                        backgroundColor: `${notebook.color}20`,
+                        color: notebook.color,
+                        borderWidth: '1px',
+                        borderStyle: 'solid',
+                        borderColor: `${notebook.color}40`
+                      }}
+                    >
+                      <span className="mr-1">{notebook.icon}</span>
+                      <span>{notebook.name}</span>
+                      {folder && (
+                        <span className="ml-1 text-xs opacity-70">({folder.name})</span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            notebookIds: prev.notebookIds.filter(id => id !== notebookId)
+                          }));
+                        }}
+                        className="ml-2 hover:opacity-70"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+            
+            {/* Notebook Selector */}
+            {notebooks && notebooks.length > 0 ? (
+              <div>
+                <select
+                  onChange={(e) => {
+                    const notebookId = e.target.value;
+                    if (notebookId && !formData.notebookIds.includes(notebookId)) {
+                      setFormData(prev => ({
+                        ...prev,
+                        notebookIds: [...prev.notebookIds, notebookId]
+                      }));
+                    }
+                    e.target.value = '';
+                  }}
+                  className="w-full px-3 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  style={{ 
+                    backgroundColor: 'var(--bg-primary)', 
+                    borderWidth: '1px', 
+                    borderStyle: 'solid', 
+                    borderColor: 'var(--border-color)', 
+                    color: 'var(--text-primary)'
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Select a notebook...</option>
+                  {folders && folders.map(folder => {
+                    const folderNotebooks = notebooks.filter(nb => nb.folderId === folder.id);
+                    if (folderNotebooks.length === 0) return null;
+                    return (
+                      <optgroup key={folder.id} label={`${folder.icon} ${folder.name}`}>
+                        {folderNotebooks.map(notebook => (
+                          <option 
+                            key={notebook.id} 
+                            value={notebook.id}
+                            disabled={formData.notebookIds.includes(notebook.id)}
+                          >
+                            {notebook.icon} {notebook.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+                </select>
+                <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
+                  💡 Notes can belong to multiple notebooks for flexible organization
+                </p>
+              </div>
+            ) : (
+              <div 
+                className="p-4 rounded-lg text-sm text-center"
+                style={{ 
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                <p className="mb-2">No notebooks available yet.</p>
+                <p className="text-xs">Create folders and notebooks in the sidebar to organize your notes!</p>
+              </div>
             )}
           </div>
 

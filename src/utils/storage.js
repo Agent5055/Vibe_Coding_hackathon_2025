@@ -83,6 +83,7 @@ const enhanceNote = (note) => {
     isPinned: note.isPinned ?? false,
     lastOpened: note.lastOpened || note.updatedAt || note.createdAt,
     versions: note.versions || [],
+    notebookIds: note.notebookIds || [], // Notes can belong to multiple notebooks
     // Always recalculate word count and reading time from current body
     wordCount: calculateWordCount(body),
     readingTime: calculateReadingTime(body),
@@ -146,6 +147,7 @@ export const storage = {
       body: note.body || '',
       tags: note.tags || [],
       keywords: note.keywords || [],
+      notebookIds: note.notebookIds || [], // Support multiple notebooks
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -343,6 +345,56 @@ export const storage = {
     return notes.filter(note => 
       tags.some(tag => note.tags.includes(tag))
     );
+  },
+
+  // Filter notes by notebook ID
+  filterNotesByNotebook: async (notebookId) => {
+    const notes = await storage.getAllNotes();
+    return notes.filter(note => 
+      note.notebookIds && note.notebookIds.includes(notebookId)
+    );
+  },
+
+  // Filter notes by folder ID (get all notes in all notebooks in a folder)
+  filterNotesByFolder: async (folderId, notebooks) => {
+    const notes = await storage.getAllNotes();
+    const folderNotebookIds = notebooks
+      .filter(n => n.folderId === folderId)
+      .map(n => n.id);
+    
+    return notes.filter(note => 
+      note.notebookIds && note.notebookIds.some(id => folderNotebookIds.includes(id))
+    );
+  },
+
+  // Get unassigned notes (notes not in any notebook)
+  getUnassignedNotes: async () => {
+    const notes = await storage.getAllNotes();
+    return notes.filter(note => 
+      !note.notebookIds || note.notebookIds.length === 0
+    );
+  },
+
+  // Add note to notebook
+  addNoteToNotebook: async (noteId, notebookId) => {
+    const note = await storage.getNote(noteId);
+    if (!note) return null;
+
+    const notebookIds = note.notebookIds || [];
+    if (!notebookIds.includes(notebookId)) {
+      notebookIds.push(notebookId);
+      return await storage.updateNote(noteId, { notebookIds });
+    }
+    return note;
+  },
+
+  // Remove note from notebook
+  removeNoteFromNotebook: async (noteId, notebookId) => {
+    const note = await storage.getNote(noteId);
+    if (!note) return null;
+
+    const notebookIds = (note.notebookIds || []).filter(id => id !== notebookId);
+    return await storage.updateNote(noteId, { notebookIds });
   },
 
   // Clear all data (notes, settings, themes)
