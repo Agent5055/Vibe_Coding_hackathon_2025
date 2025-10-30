@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { storage } from '../utils/storage.js';
 import { THEMES, getTheme, exportThemeConfig, importThemeConfig, validateThemeConfig } from '../utils/themes.js';
 import { tagManager } from '../utils/tagManager.js';
+import ImportExportPanel from './ImportExportPanel.jsx';
 
 const SettingsPanel = () => {
   const [layout, setLayout] = useState('cozy');
@@ -9,6 +10,7 @@ const SettingsPanel = () => {
   const [minimapPosition, setMinimapPosition] = useState('bottom-right');
   const [showConfirmWipe, setShowConfirmWipe] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [notes, setNotes] = useState([]);
   
   // Tag management state
   const [tags, setTags] = useState([]);
@@ -25,9 +27,20 @@ const SettingsPanel = () => {
     setRevisionDays(parseInt(savedDays, 10));
     setMinimapPosition(savedPosition);
     
-    // Load tags
+    // Load tags and notes
     loadTags();
+    loadNotes();
   }, []);
+  
+  const loadNotes = async () => {
+    const allNotes = await storage.getAllNotes();
+    setNotes(allNotes);
+  };
+  
+  const handleImportComplete = async () => {
+    await loadNotes();
+    window.location.reload(); // Refresh the app to show imported notes
+  };
   
   const loadTags = async () => {
     const allTags = tagManager.getAllTags();
@@ -496,6 +509,9 @@ const SettingsPanel = () => {
           </label>
         </div>
       </div>
+
+      {/* Import/Export */}
+      <ImportExportPanel notes={notes} onImportComplete={handleImportComplete} />
 
       {/* Danger Zone */}
       <div 

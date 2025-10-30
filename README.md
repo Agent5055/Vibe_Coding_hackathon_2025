@@ -7,12 +7,26 @@ A modern, intelligent note-taking application with mind-map visualization and au
 ## Features
 
 ### Core Features
+- **Rich Text Editor**: Beautiful Tiptap-based editor with markdown support, headings, lists, code blocks, and more
+- **Interactive Checklists**: Create to-do items with checkboxes ([ ] and [x]) and track completion
 - **Smart Note Management**: Create, edit, and delete notes with automatic keyword extraction
+- **Pinned Notes**: Pin important notes to keep them at the top of your list
+- **Daily Notes**: Quick access to create or open today's note for journaling
 - **Mind Map Visualization**: Interactive graph view showing relationships between notes
 - **Version History**: Track and restore previous versions of your notes (last 5 versions per note)
 - **Linked Notes**: Automatic discovery of related notes based on shared keywords
 - **Revision Reminders**: Get reminded to revisit notes you haven't opened in a while (configurable)
-- **Advanced Analytics**: Comprehensive insights into your learning patterns with charts and heatmaps
+- **Full-Text Search**: Lightning-fast search powered by FlexSearch across all note content
+- **"On This Day"**: See notes created or edited on this day in previous years
+- **Advanced Analytics**: Comprehensive insights including:
+  - Task tracking with completion rates
+  - Knowledge growth charts
+  - Topic heatmaps
+  - Network analysis
+- **Import/Export**: 
+  - Export notes as Markdown (.md) or PDF
+  - Export complete backups as JSON
+  - Import markdown files with frontmatter support
 - **6 Beautiful Themes**: Choose from 3 light and 3 dark themes to match your mood and workflow (see [Themes Guide](THEMES.md))
 - **Local Storage with IndexedDB**: Efficient storage for 500+ notes, all data stored locally in your browser
 - **Responsive Design**: Works perfectly on desktop and mobile devices
@@ -56,12 +70,17 @@ ThoughtWeaver comes with **6 stunning themes** to personalize your experience:
 ThoughtWeaver feels smart without needing any external AI or cloud services:
 
 - **Automatic Keyword Linking**: Notes are automatically connected based on shared keywords, revealing hidden relationships in your knowledge
+- **Smart Keyword Extraction**: Headings are weighted 3x more heavily for better topic detection
 - **Tag Suggestions**: Smart tag recommendations based on your most frequently used words and patterns
+- **Full-Text Search**: Instant search across all note content powered by FlexSearch
+- **Task Analytics**: Automatic detection and tracking of checklist items across all notes
 - **Real-time Analytics**: Comprehensive insights generated instantly from your notes:
+  - Task completion tracking and statistics
   - Knowledge growth tracking over time
   - Topic frequency and connection heatmaps
   - Hub detection (highly connected notes that serve as knowledge centers)
   - Isolated note identification (notes that need more connections)
+  - "On This Day" historical note discovery
 - **Intelligent Reminders**: Get reminded to revisit notes you haven't opened recently (fully configurable)
 - **Pattern Recognition**: The app learns your writing patterns to provide word counts, reading time estimates, and content analysis
 - **Network Visualization**: See how your ideas connect through an interactive mind map with smart filtering
@@ -232,6 +251,28 @@ The application uses TailwindCSS with a custom design system. Key customization 
 2. **Custom Analytics**: Add new metrics in `StatsPanel.jsx`
 3. **Graph Layouts**: Modify layout options in `graphData.js`
 
+## Future Implementations
+
+The following features are planned for future releases:
+
+### Advanced Organization
+- **Notebooks/Folders**: Hierarchical organization system for notes
+- **Note Templates**: Reusable templates for common note types (Meeting Notes, Daily Journal, etc.)
+
+### Enhanced Linking
+- **Manual Bi-directional Linking**: Wiki-style [[Note Title]] linking with autocomplete
+- **Link Graph Visualization**: See manual links separately from keyword-based connections
+
+### Power User Features
+- **Command Palette (Ctrl+K)**: Quick access to all actions and notes
+- **Keyboard Shortcuts**: Full keyboard navigation
+- **Advanced Filtering**: Filter by notebooks, date ranges, and custom queries
+
+### Collaboration & Sync
+- **Optional Cloud Sync**: Sync notes across devices (while maintaining privacy)
+- **Collaborative Editing**: Share and collaborate on specific notes
+- **Export to Popular Formats**: Notion, Obsidian, Evernote compatibility
+
 ## Browser Support
 
 - Chrome 90+
@@ -241,13 +282,15 @@ The application uses TailwindCSS with a custom design system. Key customization 
 
 ## Performance
 
-- **Bundle Size**: ~600KB gzipped (includes Recharts and enhanced features)
+- **Bundle Size**: ~850KB gzipped (includes Tiptap, FlexSearch, Recharts, and PDF export)
 - **First Load**: <2s on 3G
 - **Mind Map Rendering**: Optimized for 500+ nodes with efficient filtering
+- **Search Performance**: FlexSearch provides sub-millisecond query times
 - **Storage**: 
   - IndexedDB for scalability (tested with 1000+ notes)
   - Automatic migration from LocalStorage
   - Efficient indexed queries for fast retrieval
+  - Support for notebooks and templates (v2 schema)
 - **Real-time Analytics**: Computed on-demand with memoization
 - **Responsive UI**: Smooth 60fps animations and transitions
 

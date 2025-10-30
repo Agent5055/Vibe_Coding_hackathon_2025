@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { extractNoteKeywords } from '../utils/keywords.js';
 import { storage } from '../utils/storage.js';
 import { tagManager } from '../utils/tagManager.js';
+import RichTextEditor from './RichTextEditor.jsx';
 
 const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [availableTags, setAvailableTags] = useState([]);
+  const [useRichText, setUseRichText] = useState(true);
 
   useEffect(() => {
     if (note) {
@@ -176,19 +178,37 @@ const NoteForm = ({ note, onSave, onCancel, isOpen }) => {
           </div>
 
           <div>
-            <label htmlFor="body" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-              Content
-            </label>
-            <textarea
-              id="body"
-              name="body"
-              value={formData.body}
-              onChange={handleInputChange}
-              placeholder="Write your thoughts here..."
-              rows={8}
-              className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none transition-all duration-200"
-              style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
-            />
+            <div className="flex items-center justify-between mb-2">
+              <label htmlFor="body" className="block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                Content
+              </label>
+              <button
+                type="button"
+                onClick={() => setUseRichText(!useRichText)}
+                className="text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                {useRichText ? '📝 Rich Text' : '📄 Plain Text'}
+              </button>
+            </div>
+            {useRichText ? (
+              <RichTextEditor
+                content={formData.body}
+                onChange={(html) => setFormData(prev => ({ ...prev, body: html }))}
+                placeholder="Write your thoughts here..."
+              />
+            ) : (
+              <textarea
+                id="body"
+                name="body"
+                value={formData.body}
+                onChange={handleInputChange}
+                placeholder="Write your thoughts here..."
+                rows={8}
+                className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none transition-all duration-200"
+                style={{ backgroundColor: 'var(--bg-primary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
+              />
+            )}
           </div>
 
           <div>

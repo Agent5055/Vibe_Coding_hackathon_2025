@@ -151,6 +151,34 @@ function App() {
     setSelectedNote(note);
   };
 
+  const handleDailyNote = async () => {
+    // Format today's date as YYYY-MM-DD
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0];
+    const title = `Daily Note - ${dateStr}`;
+    
+    // Check if today's note already exists
+    const existingNote = notes.find(note => note.title === title);
+    
+    if (existingNote) {
+      // Open existing daily note for editing
+      setEditingNote(existingNote);
+      setIsFormOpen(true);
+      await storage.updateLastOpened(existingNote.id);
+    } else {
+      // Create new daily note with template
+      const newNote = {
+        title,
+        body: `<h1>Daily Note - ${dateStr}</h1>\n<h2>Tasks</h2>\n<ul data-type="taskList">\n  <li data-type="taskItem" data-checked="false"><label><input type="checkbox"><span></span></label><div><p>Add your tasks here...</p></div></li>\n</ul>\n<h2>Notes</h2>\n<p>Write your thoughts and reflections for today...</p>`,
+        tags: ['daily'],
+        isPinned: false
+      };
+      
+      setEditingNote(newNote);
+      setIsFormOpen(true);
+    }
+  };
+
   const views = [
     { id: 'list', name: 'Notes', icon: '📝' },
     { id: 'mindmap', name: 'Mind Map', icon: '🧠' },
@@ -174,6 +202,17 @@ function App() {
             </div>
             
             <div className="flex items-center space-x-4">
+              <button
+                onClick={handleDailyNote}
+                className="px-3 py-2 bg-secondary-100 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 rounded-lg hover:bg-secondary-200 dark:hover:bg-secondary-700 transition-colors duration-200 flex items-center space-x-2"
+                title="Open or create today's daily note"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Daily Note</span>
+              </button>
+              
               <button
                 onClick={handleCreateNote}
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200 flex items-center space-x-2"

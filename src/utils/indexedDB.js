@@ -2,12 +2,14 @@
 // Provides efficient storage for 500+ notes with fallback to LocalStorage
 
 const DB_NAME = 'ThoughtWeaverDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Incremented for new stores
 const STORES = {
   NOTES: 'notes',
   VERSIONS: 'versions',
   SETTINGS: 'settings',
-  THEMES: 'themes'
+  THEMES: 'themes',
+  NOTEBOOKS: 'notebooks',
+  TEMPLATES: 'templates'
 };
 
 class IndexedDBWrapper {
@@ -48,6 +50,18 @@ class IndexedDBWrapper {
           notesStore.createIndex('createdAt', 'createdAt', { unique: false });
           notesStore.createIndex('updatedAt', 'updatedAt', { unique: false });
           notesStore.createIndex('lastOpened', 'lastOpened', { unique: false });
+          notesStore.createIndex('notebookId', 'notebookId', { unique: false });
+          notesStore.createIndex('isPinned', 'isPinned', { unique: false });
+        } else if (event.oldVersion < 2) {
+          // Add new indexes for existing store
+          const transaction = event.target.transaction;
+          const notesStore = transaction.objectStore(STORES.NOTES);
+          if (!notesStore.indexNames.contains('notebookId')) {
+            notesStore.createIndex('notebookId', 'notebookId', { unique: false });
+          }
+          if (!notesStore.indexNames.contains('isPinned')) {
+            notesStore.createIndex('isPinned', 'isPinned', { unique: false });
+          }
         }
 
         // Versions store
@@ -65,6 +79,20 @@ class IndexedDBWrapper {
         // Themes store
         if (!db.objectStoreNames.contains(STORES.THEMES)) {
           db.createObjectStore(STORES.THEMES, { keyPath: 'id' });
+        }
+
+        // Notebooks store
+        if (!db.objectStoreNames.contains(STORES.NOTEBOOKS)) {
+          const notebooksStore = db.createObjectStore(STORES.NOTEBOOKS, { keyPath: 'id' });
+          notebooksStore.createIndex('createdAt', 'createdAt', { unique: false });
+          notebooksStore.createIndex('name', 'name', { unique: false });
+        }
+
+        // Templates store
+        if (!db.objectStoreNames.contains(STORES.TEMPLATES)) {
+          const templatesStore = db.createObjectStore(STORES.TEMPLATES, { keyPath: 'id' });
+          templatesStore.createIndex('createdAt', 'createdAt', { unique: false });
+          templatesStore.createIndex('name', 'name', { unique: false });
         }
       };
     });
@@ -292,6 +320,106 @@ class IndexedDBWrapper {
   calculateReadingTime(text) {
     const wordCount = this.calculateWordCount(text);
     return Math.ceil(wordCount / 200);
+  }
+
+  // Notebook operations
+  async getAllNotebooks() {
+    try {
+      return await this.transaction(STORES.NOTEBOOKS, 'readonly', (store) => store.getAll());
+    } catch (error) {
+      console.error('Error getting notebooks from IndexedDB:', error);
+      return [];
+    }
+  }
+
+  async getNotebook(id) {
+    try {
+      return await this.transaction(STORES.NOTEBOOKS, 'readonly', (store) => store.get(id));
+    } catch (error) {
+      console.error('Error getting notebook from IndexedDB:', error);
+      return null;
+    }
+  }
+
+  async saveNotebook(notebook) {
+    try {
+      return await this.transaction(STORES.NOTEBOOKS, 'readwrite', (store) => store.put(notebook));
+    } catch (error) {
+      console.error('Error saving notebook to IndexedDB:', error);
+      throw error;
+    }
+  }
+
+  async deleteNotebook(id) {
+    try {
+      return await this.transaction(STORES.NOTEBOOKS, 'readwrite', (store) => store.delete(id));
+    } catch (error) {
+      console.error('Error deleting notebook from IndexedDB:', error);
+      throw error;
+    }
+  }
+
+  // Template operations
+  async getAllTemplates() {
+    try {
+      return await this.transaction(STORES.TEMPLATES, 'readonly', (store) => store.getAll());
+    } catch (error) {
+      console.error('Error getting templates from IndexedDB:', error);
+      return [];
+    }
+  }
+
+  async getTemplate(id) {
+    try {
+      return await this.transaction(STORES.TEMPLATES, 'readonly', (store) => store.get(id));
+    } catch (error) {
+      console.error('Error getting template from IndexedDB:', error);
+      return null;
+    }
+  }
+
+  async saveTemplate(template) {
+    try {
+      return await this.transaction(STORES.TEMPLATES, 'readwrite', (store) => store.put(template));
+    } catch (error) {
+      console.error('Error saving template to IndexedDB:', error);
+      throw error;
+    }
+  }
+
+  async deleteTemplate(id) {
+    try {
+      return await this.transaction(STORES.TEMPLATES, 'readwrite', (store) => store.delete(id));
+    } catch (error) {
+      console.error('Error deleting template from IndexedDB:', error);
+      throw error;
+    }
+  }
+
+  // Get notes by notebook
+  async getNotesByNotebook(notebookId) {
+    try {
+      return await this.transaction(STORES.NOTES, 'readonly', (store) => {
+        const index = store.index('notebookId');
+        return index.getAll(notebookId);
+      });
+    } catch (error) {
+      console.error('Error getting notes by notebook:', error);
+      return [];
+    }
+  }
+
+  // Get pinned notes
+  async getPinnedNotes() {
+    try {
+      return await this.transaction(STORES.NOTES, 'readonly', (store) => {
+        const index = store.index('isPinned');
+        return index.getAll(true);
+      });
+    } catch (error) {
+      console.error('Error getting pinned notes:', error);
+      return [];
+    }
   }
 }
 

@@ -10,11 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tiptap/extension-link": "^3.10.0",
+    "@tiptap/extension-placeholder": "^3.10.0",
+    "@tiptap/extension-task-item": "^3.10.0",
+    "@tiptap/extension-task-list": "^3.10.0",
+    "@tiptap/react": "^3.10.0",
+    "@tiptap/starter-kit": "^3.10.0",
+    "cmdk": "^1.1.1",
     "cytoscape": "^3.26.0",
     "cytoscape-cose-bilkent": "^4.1.0",
+    "file-saver": "^2.0.5",
+    "flexsearch": "^0.8.212",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "recharts": "^2.15.4"
+    "react-markdown": "^10.1.0",
+    "recharts": "^2.15.4",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

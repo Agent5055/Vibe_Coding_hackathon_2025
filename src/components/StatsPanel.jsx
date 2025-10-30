@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 import { getWordFrequency } from '../utils/keywords.js';
+import { getAllTaskStats } from '../utils/taskParser.js';
 import HeatmapPanel from './HeatmapPanel.jsx';
 import GrowthChart from './GrowthChart.jsx';
+import OnThisDay from './OnThisDay.jsx';
 
 const StatsPanel = ({ notes }) => {
   const stats = useMemo(() => {
@@ -81,6 +83,9 @@ const StatsPanel = ({ notes }) => {
 
     // Word frequency
     const wordFrequency = getWordFrequency(notes);
+    
+    // Task statistics
+    const taskStats = getAllTaskStats(notes);
 
     return {
       totalNotes,
@@ -94,7 +99,8 @@ const StatsPanel = ({ notes }) => {
       longestNote,
       avgKeywords,
       hubNotes,
-      isolatedNotes
+      isolatedNotes,
+      taskStats
     };
   }, [notes]);
 
@@ -122,6 +128,111 @@ const StatsPanel = ({ notes }) => {
     <div className="space-y-6">
       {/* Knowledge Growth Chart */}
       <GrowthChart notes={notes} />
+
+      {/* On This Day */}
+      <OnThisDay notes={notes} onNoteClick={(note) => {
+        // Open note in list view
+        window.dispatchEvent(new CustomEvent('viewNote', { detail: note }));
+      }} />
+
+      {/* Task Statistics */}
+      {stats.taskStats.totalTasks > 0 && (
+        <div 
+          className="rounded-xl p-6 shadow-sm"
+          style={{ 
+            backgroundColor: 'var(--bg-secondary)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: 'var(--border-color)'
+          }}
+        >
+          <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+            📝 Task Tracker
+          </h3>
+          
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                {stats.taskStats.totalTasks}
+              </p>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                Total Tasks
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-3xl font-bold text-green-500">
+                {stats.taskStats.completedTasks}
+              </p>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                Completed
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-3xl font-bold text-orange-500">
+                {stats.taskStats.pendingTasks}
+              </p>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                Pending
+              </p>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                Overall Completion
+              </span>
+              <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                {Math.round(stats.taskStats.completionRate)}%
+              </span>
+            </div>
+            <div className="w-full rounded-full h-3" style={{ backgroundColor: 'var(--bg-primary)' }}>
+              <div 
+                className="bg-green-500 h-3 rounded-full transition-all duration-300"
+                style={{ width: `${stats.taskStats.completionRate}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Notes with Most Pending Tasks */}
+          {stats.taskStats.notesWithTasks.filter(item => item.pending > 0).length > 0 && (
+            <div>
+              <h4 className="text-md font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+                Notes with Pending Tasks
+              </h4>
+              <div className="space-y-2">
+                {stats.taskStats.notesWithTasks
+                  .filter(item => item.pending > 0)
+                  .slice(0, 5)
+                  .map(({ note, total, completed, pending }) => (
+                    <div 
+                      key={note.id} 
+                      className="flex items-center justify-between p-3 rounded-lg" 
+                      style={{ backgroundColor: 'var(--bg-primary)' }}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                          {note.title || 'Untitled'}
+                        </p>
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                          {completed} of {total} completed
+                        </p>
+                      </div>
+                      <div className="ml-4 flex items-center">
+                        <span className="px-3 py-1 rounded-full text-sm bg-orange-100 text-orange-700">
+                          {pending} pending
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

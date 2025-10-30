@@ -31,9 +31,58 @@ const STOP_WORDS = new Set([
   'remain', 'remained', 'remaining'
 ]);
 
-// Extract keywords from text
-export const extractKeywords = (text) => {
+// Extract text from HTML (for rich text content)
+const stripHTML = (html) => {
+  if (!html) return '';
+  // Create a temporary div to parse HTML
+  if (typeof document !== 'undefined') {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  }
+  // Fallback: simple regex-based stripping
+  return html.replace(/<[^>]*>/g, ' ');
+};
+
+// Extract keywords with weighted importance from headings
+export const extractKeywords = (text, isHTML = false) => {
   if (!text || typeof text !== 'string') return [];
+
+  let wordCount = {};
+  
+  // If it's HTML (rich text), extract headings separately for weighting
+  if (isHTML && text.includes('<')) {
+    if (typeof document !== 'undefined') {
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      
+      // Extract headings with higher weight
+      const headings = div.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headings.forEach((heading) => {
+        const headingText = heading.textContent || '';
+        const words = headingText
+          .toLowerCase()
+          .replace(/[^\w\s]/g, ' ')
+          .split(' ')
+          .filter(word => 
+            word.length > 2 && 
+            !STOP_WORDS.has(word) && 
+            !/^\d+$/.test(word)
+          );
+        
+        // Weight heading words 3x more
+        words.forEach(word => {
+          wordCount[word] = (wordCount[word] || 0) + 3;
+        });
+      });
+      
+      // Get remaining text
+      text = div.textContent || div.innerText || '';
+    } else {
+      // Fallback: extract text from HTML tags
+      text = stripHTML(text);
+    }
+  }
 
   // Clean and tokenize text
   const cleanedText = text
@@ -42,7 +91,7 @@ export const extractKeywords = (text) => {
     .replace(/\s+/g, ' ') // Normalize whitespace
     .trim();
 
-  if (!cleanedText) return [];
+  if (!cleanedText) return Object.keys(wordCount).slice(0, 10);
 
   // Split into words and filter
   const words = cleanedText.split(' ')
@@ -52,8 +101,7 @@ export const extractKeywords = (text) => {
       !/^\d+$/.test(word) // Not just numbers
     );
 
-  // Count word frequency
-  const wordCount = {};
+  // Add regular words to count
   words.forEach(word => {
     wordCount[word] = (wordCount[word] || 0) + 1;
   });
@@ -67,8 +115,39 @@ export const extractKeywords = (text) => {
 
 // Extract keywords from a note (title + body)
 export const extractNoteKeywords = (note) => {
-  const text = `${note.title || ''} ${note.body || ''}`.trim();
-  return extractKeywords(text);
+  const titleText = note.title || '';
+  const bodyText = note.body || '';
+  
+  // Check if body contains HTML (rich text)
+  const isHTML = bodyText.includes('<') && bodyText.includes('>');
+  
+  // Extract body keywords
+  const bodyKeywords = extractKeywords(bodyText, isHTML);
+  
+  // Extract title keywords (always plain text, weight 2x)
+  const titleWords = titleText
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(' ')
+    .filter(word => 
+      word.length > 2 && 
+      !STOP_WORDS.has(word) && 
+      !/^\d+$/.test(word)
+    );
+  
+  // Combine with weighting
+  const wordCount = {};
+  bodyKeywords.forEach(word => {
+    wordCount[word] = (wordCount[word] || 0) + 1;
+  });
+  titleWords.forEach(word => {
+    wordCount[word] = (wordCount[word] || 0) + 2;
+  });
+  
+  return Object.entries(wordCount)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 10)
+    .map(([word]) => word);
 };
 
 // Find related notes based on keyword overlap
