@@ -358,52 +358,414 @@ body {
 }
 
 /* Layout Modes */
+
+/* COMPACT LAYOUT - Reduced spacing and smaller fonts throughout */
 .layout-compact {
-  --spacing-card: 0.75rem;
-  --spacing-section: 1rem;
-  --spacing-element: 0.5rem;
+  /* Font sizes */
+  --font-size-xs: 0.7rem;
+  --font-size-sm: 0.8rem;
   --font-size-base: 0.875rem;
+  --font-size-lg: 1rem;
+  --font-size-xl: 1.125rem;
+  --font-size-2xl: 1.25rem;
+  --font-size-3xl: 1.5rem;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-base: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.25rem;
+  --spacing-xl: 1.5rem;
+  --spacing-2xl: 2rem;
+  --spacing-3xl: 2.5rem;
+  
+  /* Component specific */
+  --card-padding: 0.75rem;
+  --input-padding-y: 0.5rem;
+  --input-padding-x: 0.75rem;
+  --button-padding-y: 0.5rem;
+  --button-padding-x: 0.875rem;
+  --border-radius-sm: 0.375rem;
+  --border-radius-base: 0.5rem;
+  --border-radius-lg: 0.75rem;
+  --header-height: 3.5rem;
+  --nav-padding-y: 0.75rem;
+  --modal-padding: 1rem;
+  --gap-base: 0.5rem;
+  --gap-md: 0.75rem;
+  --gap-lg: 1rem;
 }
 
-.layout-compact .card,
-.layout-compact .rounded-xl {
-  padding: var(--spacing-card);
+/* COZY LAYOUT - Comfortable spacing and standard fonts */
+.layout-cozy {
+  /* Font sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-base: 1rem;
+  --spacing-md: 1.25rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-3xl: 3rem;
+  
+  /* Component specific */
+  --card-padding: 1.5rem;
+  --input-padding-y: 0.75rem;
+  --input-padding-x: 1rem;
+  --button-padding-y: 0.5rem;
+  --button-padding-x: 1rem;
+  --border-radius-sm: 0.5rem;
+  --border-radius-base: 0.75rem;
+  --border-radius-lg: 1rem;
+  --header-height: 4rem;
+  --nav-padding-y: 1rem;
+  --modal-padding: 1.5rem;
+  --gap-base: 0.75rem;
+  --gap-md: 1rem;
+  --gap-lg: 1.5rem;
 }
 
+/* Apply layout variables globally */
+
+/* Cards and Rounded Elements */
+.layout-compact .rounded-xl,
+.layout-compact .card {
+  padding: var(--card-padding) !important;
+  border-radius: var(--border-radius-lg) !important;
+}
+
+.layout-cozy .rounded-xl,
+.layout-cozy .card {
+  padding: var(--card-padding) !important;
+  border-radius: var(--border-radius-lg) !important;
+}
+
+.layout-compact .rounded-lg {
+  border-radius: var(--border-radius-base) !important;
+}
+
+.layout-cozy .rounded-lg {
+  border-radius: var(--border-radius-base) !important;
+}
+
+.layout-compact .rounded-full {
+  padding: calc(var(--spacing-xs) * 0.75) calc(var(--spacing-sm) * 1.5) !important;
+}
+
+.layout-cozy .rounded-full {
+  padding: var(--spacing-xs) var(--spacing-base) !important;
+}
+
+/* Headings */
+.layout-compact h1 {
+  font-size: var(--font-size-3xl) !important;
+}
+
+.layout-compact h2 {
+  font-size: var(--font-size-2xl) !important;
+}
+
+.layout-compact h3 {
+  font-size: var(--font-size-xl) !important;
+}
+
+.layout-cozy h1 {
+  font-size: var(--font-size-3xl) !important;
+}
+
+.layout-cozy h2 {
+  font-size: var(--font-size-2xl) !important;
+}
+
+.layout-cozy h3 {
+  font-size: var(--font-size-xl) !important;
+}
+
+/* Text */
+.layout-compact p,
+.layout-compact .text-base {
+  font-size: var(--font-size-base) !important;
+}
+
+.layout-compact .text-sm {
+  font-size: var(--font-size-sm) !important;
+}
+
+.layout-compact .text-xs {
+  font-size: var(--font-size-xs) !important;
+}
+
+.layout-compact .text-lg {
+  font-size: var(--font-size-lg) !important;
+}
+
+.layout-cozy p,
+.layout-cozy .text-base {
+  font-size: var(--font-size-base) !important;
+}
+
+.layout-cozy .text-sm {
+  font-size: var(--font-size-sm) !important;
+}
+
+.layout-cozy .text-xs {
+  font-size: var(--font-size-xs) !important;
+}
+
+.layout-cozy .text-lg {
+  font-size: var(--font-size-lg) !important;
+}
+
+/* Buttons */
+.layout-compact button {
+  padding: var(--button-padding-y) var(--button-padding-x) !important;
+  font-size: var(--font-size-sm) !important;
+}
+
+.layout-cozy button {
+  padding: var(--button-padding-y) var(--button-padding-x) !important;
+  font-size: var(--font-size-base) !important;
+}
+
+/* Inputs */
+.layout-compact input,
+.layout-compact textarea,
+.layout-compact select {
+  padding: var(--input-padding-y) var(--input-padding-x) !important;
+  font-size: var(--font-size-sm) !important;
+}
+
+.layout-cozy input,
+.layout-cozy textarea,
+.layout-cozy select {
+  padding: var(--input-padding-y) var(--input-padding-x) !important;
+  font-size: var(--font-size-base) !important;
+}
+
+/* Spacing Utilities */
 .layout-compact .space-y-6 > *:not(:last-child) {
-  margin-bottom: var(--spacing-section);
+  margin-bottom: var(--spacing-lg) !important;
 }
 
 .layout-compact .space-y-4 > *:not(:last-child) {
-  margin-bottom: var(--spacing-element);
+  margin-bottom: var(--spacing-md) !important;
 }
 
-.layout-compact .text-base,
-.layout-compact p {
-  font-size: var(--font-size-base);
+.layout-compact .space-y-3 > *:not(:last-child) {
+  margin-bottom: var(--spacing-base) !important;
 }
 
-.layout-cozy {
-  --spacing-card: 1.5rem;
-  --spacing-section: 1.5rem;
-  --spacing-element: 1rem;
-  --font-size-base: 1rem;
+.layout-compact .space-y-2 > *:not(:last-child) {
+  margin-bottom: var(--spacing-sm) !important;
 }
 
-.layout-cozy .card,
-.layout-cozy .rounded-xl {
-  padding: var(--spacing-card);
+.layout-compact .space-x-4 > *:not(:last-child) {
+  margin-right: var(--spacing-md) !important;
+}
+
+.layout-compact .space-x-2 > *:not(:last-child) {
+  margin-right: var(--spacing-sm) !important;
+}
+
+.layout-compact .gap-4 {
+  gap: var(--gap-md) !important;
+}
+
+.layout-compact .gap-3 {
+  gap: var(--gap-base) !important;
+}
+
+.layout-compact .gap-2 {
+  gap: var(--spacing-sm) !important;
 }
 
 .layout-cozy .space-y-6 > *:not(:last-child) {
-  margin-bottom: var(--spacing-section);
+  margin-bottom: var(--spacing-xl) !important;
 }
 
 .layout-cozy .space-y-4 > *:not(:last-child) {
-  margin-bottom: var(--spacing-element);
+  margin-bottom: var(--spacing-lg) !important;
 }
 
-.layout-cozy .text-base,
-.layout-cozy p {
-  font-size: var(--font-size-base);
+.layout-cozy .space-y-3 > *:not(:last-child) {
+  margin-bottom: var(--spacing-md) !important;
+}
+
+.layout-cozy .space-y-2 > *:not(:last-child) {
+  margin-bottom: var(--spacing-base) !important;
+}
+
+.layout-cozy .space-x-4 > *:not(:last-child) {
+  margin-right: var(--spacing-lg) !important;
+}
+
+.layout-cozy .space-x-2 > *:not(:last-child) {
+  margin-right: var(--spacing-base) !important;
+}
+
+.layout-cozy .gap-4 {
+  gap: var(--gap-lg) !important;
+}
+
+.layout-cozy .gap-3 {
+  gap: var(--gap-md) !important;
+}
+
+.layout-cozy .gap-2 {
+  gap: var(--gap-base) !important;
+}
+
+/* Header - Moderate changes */
+.layout-compact header {
+  height: var(--header-height) !important;
+}
+
+.layout-compact header .h-16 {
+  height: var(--header-height) !important;
+}
+
+.layout-cozy header {
+  height: var(--header-height) !important;
+}
+
+.layout-cozy header .h-16 {
+  height: var(--header-height) !important;
+}
+
+/* Navigation */
+.layout-compact nav button,
+.layout-compact nav a {
+  padding-top: var(--nav-padding-y) !important;
+  padding-bottom: var(--nav-padding-y) !important;
+}
+
+.layout-cozy nav button,
+.layout-cozy nav a {
+  padding-top: var(--nav-padding-y) !important;
+  padding-bottom: var(--nav-padding-y) !important;
+}
+
+/* Modals and Sidebars */
+.layout-compact .fixed .p-6 {
+  padding: var(--modal-padding) !important;
+}
+
+.layout-cozy .fixed .p-6 {
+  padding: var(--modal-padding) !important;
+}
+
+/* Margins */
+.layout-compact .mb-2 {
+  margin-bottom: var(--spacing-sm) !important;
+}
+
+.layout-compact .mb-3 {
+  margin-bottom: var(--spacing-base) !important;
+}
+
+.layout-compact .mb-4 {
+  margin-bottom: var(--spacing-md) !important;
+}
+
+.layout-compact .mt-4 {
+  margin-top: var(--spacing-md) !important;
+}
+
+.layout-cozy .mb-2 {
+  margin-bottom: var(--spacing-base) !important;
+}
+
+.layout-cozy .mb-3 {
+  margin-bottom: var(--spacing-md) !important;
+}
+
+.layout-cozy .mb-4 {
+  margin-bottom: var(--spacing-lg) !important;
+}
+
+.layout-cozy .mt-4 {
+  margin-top: var(--spacing-lg) !important;
+}
+
+/* Padding utilities */
+.layout-compact .p-2 {
+  padding: var(--spacing-sm) !important;
+}
+
+.layout-compact .p-3 {
+  padding: var(--spacing-base) !important;
+}
+
+.layout-compact .p-4 {
+  padding: var(--spacing-md) !important;
+}
+
+.layout-compact .p-6 {
+  padding: var(--spacing-lg) !important;
+}
+
+.layout-compact .px-3 {
+  padding-left: var(--spacing-base) !important;
+  padding-right: var(--spacing-base) !important;
+}
+
+.layout-compact .px-4 {
+  padding-left: var(--spacing-md) !important;
+  padding-right: var(--spacing-md) !important;
+}
+
+.layout-compact .py-2 {
+  padding-top: var(--spacing-sm) !important;
+  padding-bottom: var(--spacing-sm) !important;
+}
+
+.layout-compact .py-3 {
+  padding-top: var(--spacing-base) !important;
+  padding-bottom: var(--spacing-base) !important;
+}
+
+.layout-cozy .p-2 {
+  padding: var(--spacing-base) !important;
+}
+
+.layout-cozy .p-3 {
+  padding: var(--spacing-md) !important;
+}
+
+.layout-cozy .p-4 {
+  padding: var(--spacing-lg) !important;
+}
+
+.layout-cozy .p-6 {
+  padding: var(--spacing-xl) !important;
+}
+
+.layout-cozy .px-3 {
+  padding-left: var(--spacing-md) !important;
+  padding-right: var(--spacing-md) !important;
+}
+
+.layout-cozy .px-4 {
+  padding-left: var(--spacing-lg) !important;
+  padding-right: var(--spacing-lg) !important;
+}
+
+.layout-cozy .py-2 {
+  padding-top: var(--spacing-base) !important;
+  padding-bottom: var(--spacing-base) !important;
+}
+
+.layout-cozy .py-3 {
+  padding-top: var(--spacing-md) !important;
+  padding-bottom: var(--spacing-md) !important;
 }
