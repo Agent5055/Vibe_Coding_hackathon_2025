@@ -6,12 +6,30 @@ A modern, intelligent note-taking application with mind-map visualization and au
 
 ## Features
 
+### Core Features
 - **Smart Note Management**: Create, edit, and delete notes with automatic keyword extraction
 - **Mind Map Visualization**: Interactive graph view showing relationships between notes
-- **Analytics Dashboard**: Track your learning patterns with detailed statistics
+- **Version History**: Track and restore previous versions of your notes (last 5 versions per note)
+- **Linked Notes**: Automatic discovery of related notes based on shared keywords
+- **Revision Reminders**: Get reminded to revisit notes you haven't opened in a while (configurable)
+- **Advanced Analytics**: Comprehensive insights into your learning patterns with charts and heatmaps
 - **6 Beautiful Themes**: Choose from 3 light and 3 dark themes to match your mood and workflow (see [Themes Guide](THEMES.md))
-- **Local Storage**: All data stored locally in your browser
+- **Local Storage with IndexedDB**: Efficient storage for 500+ notes, all data stored locally in your browser
 - **Responsive Design**: Works perfectly on desktop and mobile devices
+
+### Intelligence & Analytics
+- **Knowledge Growth Chart**: Visualize your note-taking activity over time
+- **Topic Heatmap**: See keyword frequency with color-coded intensity
+- **Network Analysis**: Identify hub notes, isolated notes, and connection patterns
+- **Reading Time Estimates**: Automatically calculated for each note
+- **Smart Filters**: Filter mind map by tags, keyword count, and date ranges
+
+### Customization
+- **Layout Modes**: Choose between Compact and Cozy spacing
+- **Mini-Map**: Configurable overview map for easier navigation
+- **Theme Import/Export**: Share and use custom theme configurations
+- **Snapshot Export**: Export your mind map as PNG images
+- **Data Management**: Full backup/restore and reset capabilities
 
 ## Themes
 
@@ -33,13 +51,52 @@ ThoughtWeaver comes with **6 stunning themes** to personalize your experience:
 
 👉 **[View Full Theme Documentation](THEMES.md)** for screenshots and details about each theme.
 
+## 🧩 Local Intelligence
+
+ThoughtWeaver feels smart without needing any external AI or cloud services:
+
+- **Automatic Keyword Linking**: Notes are automatically connected based on shared keywords, revealing hidden relationships in your knowledge
+- **Tag Suggestions**: Smart tag recommendations based on your most frequently used words and patterns
+- **Real-time Analytics**: Comprehensive insights generated instantly from your notes:
+  - Knowledge growth tracking over time
+  - Topic frequency and connection heatmaps
+  - Hub detection (highly connected notes that serve as knowledge centers)
+  - Isolated note identification (notes that need more connections)
+- **Intelligent Reminders**: Get reminded to revisit notes you haven't opened recently (fully configurable)
+- **Pattern Recognition**: The app learns your writing patterns to provide word counts, reading time estimates, and content analysis
+- **Network Visualization**: See how your ideas connect through an interactive mind map with smart filtering
+
+All intelligence features run **100% locally** in your browser - no external APIs, no tracking, no data ever leaves your device.
+
+## 🔐 Privacy First
+
+Your knowledge is yours alone. ThoughtWeaver is built with privacy as a core principle:
+
+- **Zero External Connections**: No API calls, no tracking pixels, no analytics services
+- **Local-Only Storage**: All notes, settings, and analytics stored in your browser using IndexedDB
+- **No Account Required**: Start using immediately - no sign-up, no email, no personal information
+- **Offline-First**: Works completely offline once loaded
+- **Full Data Control**: 
+  - Export all your data as JSON anytime
+  - Import data from backups
+  - Complete data wipe option when needed
+- **Open Source**: Transparent code you can inspect and verify
+- **No Cookies**: We don't use cookies or any tracking mechanisms
+
+**Your notes never leave your device.** Period.
+
 ## Tech Stack
 
 - **Frontend**: React 18 + Vite
 - **Styling**: TailwindCSS with custom design system
-- **Visualization**: Cytoscape.js for mind-map rendering
-- **Storage**: LocalStorage for data persistence
+- **Visualization**: 
+  - Cytoscape.js for mind-map rendering
+  - Recharts for analytics charts and graphs
+- **Storage**: 
+  - IndexedDB for efficient data persistence (500+ notes support)
+  - LocalStorage fallback for compatibility
 - **Build**: Vite for fast development and optimized builds
+- **Architecture**: 100% client-side, no backend required
 
 ## Getting Started
 
@@ -123,26 +180,41 @@ The built application can be deployed to:
 
 ### Components
 
-- **App.jsx**: Main application component with state management
-- **NoteForm.jsx**: Modal form for creating/editing notes
-- **NoteList.jsx**: List view with search and filtering
-- **MindMap.jsx**: Cytoscape.js integration for graph visualization
-- **StatsPanel.jsx**: Analytics dashboard
-- **ThemeToggle.jsx**: Dark/light mode switcher
+- **App.jsx**: Main application component with state management and routing
+- **NoteForm.jsx**: Modal form for creating/editing notes with version history access
+- **NoteList.jsx**: List view with search, filtering, and revision reminders
+- **MindMap.jsx**: Cytoscape.js integration with filters, mini-map, and export
+- **StatsPanel.jsx**: Comprehensive analytics dashboard with charts and insights
+- **SettingsPanel.jsx**: Centralized configuration for all app settings
+- **ThemeToggle.jsx**: Multi-theme switcher (6 themes)
+
+### New Intelligence Components
+
+- **LinkedNotes.jsx**: Displays related notes based on keyword overlap
+- **VersionHistoryModal.jsx**: Browse and restore previous note versions
+- **RevisionReminder.jsx**: Highlights notes that need reviewing
+- **HeatmapPanel.jsx**: Keyword frequency visualization
+- **GrowthChart.jsx**: Knowledge growth tracking over time
+- **FiltersPanel.jsx**: Advanced filtering for mind map
+- **MiniMapOverlay.jsx**: Overview navigation for large graphs
 
 ### Utilities
 
-- **storage.js**: LocalStorage wrapper for CRUD operations
-- **keywords.js**: Keyword extraction and relationship detection
+- **storage.js**: IndexedDB wrapper with LocalStorage fallback for CRUD operations
+- **indexedDB.js**: Efficient storage layer for 500+ notes
+- **keywords.js**: Keyword extraction, relationship detection, and frequency analysis
 - **graphData.js**: Graph data generation for Cytoscape.js
+- **themes.js**: Theme management with import/export
 
 ### Key Features
 
 1. **Automatic Keyword Extraction**: Uses stop-word filtering and frequency analysis
 2. **Smart Note Linking**: Notes are connected based on shared keywords (minimum 2 shared)
-3. **Responsive Mind Map**: Force-directed layout with interactive controls
-4. **Real-time Analytics**: Live statistics and insights
-5. **Theme Persistence**: Remembers your theme preference
+3. **Version Tracking**: Automatic versioning with restore capability (last 5 versions)
+4. **Responsive Mind Map**: Force-directed layout with interactive controls, filters, and mini-map
+5. **Real-time Analytics**: Live statistics, charts, and insights
+6. **Intelligent Reminders**: Track note activity and suggest reviews
+7. **Theme Persistence**: Full theme customization with import/export
 
 ## Customization
 
@@ -169,10 +241,15 @@ The application uses TailwindCSS with a custom design system. Key customization 
 
 ## Performance
 
-- **Bundle Size**: ~500KB gzipped
+- **Bundle Size**: ~600KB gzipped (includes Recharts and enhanced features)
 - **First Load**: <2s on 3G
-- **Mind Map Rendering**: Optimized for 100+ nodes
-- **Local Storage**: Efficient data serialization
+- **Mind Map Rendering**: Optimized for 500+ nodes with efficient filtering
+- **Storage**: 
+  - IndexedDB for scalability (tested with 1000+ notes)
+  - Automatic migration from LocalStorage
+  - Efficient indexed queries for fast retrieval
+- **Real-time Analytics**: Computed on-demand with memoization
+- **Responsive UI**: Smooth 60fps animations and transitions
 
 ## Contributing
 

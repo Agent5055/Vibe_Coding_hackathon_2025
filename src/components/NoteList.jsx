@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { storage } from '../utils/storage.js';
+import RevisionReminder from './RevisionReminder.jsx';
 
 const NoteList = ({ notes, onEdit, onDelete, onView }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -96,6 +97,9 @@ const NoteList = ({ notes, onEdit, onDelete, onView }) => {
 
   return (
     <div className="space-y-6">
+      {/* Revision Reminder */}
+      <RevisionReminder notes={notes} onNoteClick={onView} />
+      
       {/* Search and Filters */}
       <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}>
         <div className="flex flex-col lg:flex-row gap-4">

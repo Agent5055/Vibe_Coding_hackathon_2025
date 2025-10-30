@@ -6,23 +6,36 @@ import NoteList from './components/NoteList.jsx';
 import MindMap from './components/MindMap.jsx';
 import StatsPanel from './components/StatsPanel.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
+import SettingsPanel from './components/SettingsPanel.jsx';
+import LinkedNotes from './components/LinkedNotes.jsx';
+import VersionHistoryModal from './components/VersionHistoryModal.jsx';
 
 function App() {
   const [notes, setNotes] = useState([]);
-  const [activeView, setActiveView] = useState('list'); // 'list', 'mindmap', 'stats'
+  const [activeView, setActiveView] = useState('list'); // 'list', 'mindmap', 'stats', 'settings'
   const [selectedNote, setSelectedNote] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const [currentTheme, setCurrentTheme] = useState('light');
+  const [versionHistoryNote, setVersionHistoryNote] = useState(null);
+  const [layoutMode, setLayoutMode] = useState('cozy');
 
-  // Load notes and theme on mount
+  // Load notes, theme, and layout on mount
   useEffect(() => {
-    const loadedNotes = storage.getAllNotes();
-    setNotes(loadedNotes);
+    const loadData = async () => {
+      const loadedNotes = await storage.getAllNotes();
+      setNotes(loadedNotes);
+    };
+    loadData();
 
     // Check for saved theme
     const savedTheme = localStorage.getItem('thoughtweaver_theme');
     setCurrentTheme(savedTheme || 'light');
+
+    // Check for saved layout
+    const savedLayout = localStorage.getItem('thoughtweaver_layout') || 'cozy';
+    setLayoutMode(savedLayout);
+    document.documentElement.classList.add(`layout-${savedLayout}`);
   }, []);
 
   // Update theme state when ThemeToggle changes theme
@@ -57,19 +70,19 @@ function App() {
       
       if (editingNote) {
         // Update existing note
-        savedNote = storage.updateNote(editingNote.id, noteData);
+        savedNote = await storage.updateNote(editingNote.id, noteData);
       } else {
         // Create new note
-        savedNote = storage.addNote(noteData);
+        savedNote = await storage.addNote(noteData);
       }
 
       if (savedNote) {
         // Update keywords for the saved note
         const keywords = extractNoteKeywords(savedNote);
-        const updatedNote = storage.updateNote(savedNote.id, { keywords });
+        const updatedNote = await storage.updateNote(savedNote.id, { keywords });
         
         // Reload all notes to get updated relationships
-        const updatedNotes = storage.getAllNotes();
+        const updatedNotes = await storage.getAllNotes();
         setNotes(updatedNotes);
         
         setIsFormOpen(false);
@@ -81,22 +94,38 @@ function App() {
     }
   };
 
-  const handleEditNote = (note) => {
+  const handleEditNote = async (note) => {
+    // Update lastOpened when editing
+    await storage.updateLastOpened(note.id);
     setEditingNote(note);
     setIsFormOpen(true);
   };
 
-  const handleDeleteNote = (noteId) => {
+  const handleDeleteNote = async (noteId) => {
     if (window.confirm('Are you sure you want to delete this note?')) {
-      storage.deleteNote(noteId);
-      const updatedNotes = storage.getAllNotes();
+      await storage.deleteNote(noteId);
+      const updatedNotes = await storage.getAllNotes();
       setNotes(updatedNotes);
       setSelectedNote(null);
     }
   };
 
-  const handleViewNote = (note) => {
+  const handleViewNote = async (note) => {
+    // Update lastOpened when viewing
+    await storage.updateLastOpened(note.id);
+    const updatedNotes = await storage.getAllNotes();
+    setNotes(updatedNotes);
     setSelectedNote(note);
+  };
+
+  const handleRestoreVersion = async (versionData) => {
+    if (versionHistoryNote) {
+      await handleSaveNote({
+        ...versionData,
+        id: versionHistoryNote
+      });
+      setVersionHistoryNote(null);
+    }
   };
 
   const handleCreateNote = () => {
@@ -116,7 +145,8 @@ function App() {
   const views = [
     { id: 'list', name: 'Notes', icon: '📝' },
     { id: 'mindmap', name: 'Mind Map', icon: '🧠' },
-    { id: 'stats', name: 'Analytics', icon: '📊' }
+    { id: 'stats', name: 'Analytics', icon: '📊' },
+    { id: 'settings', name: 'Settings', icon: '⚙️' }
   ];
 
   return (
@@ -199,6 +229,10 @@ function App() {
         {activeView === 'stats' && (
           <StatsPanel notes={notes} />
         )}
+
+        {activeView === 'settings' && (
+          <SettingsPanel />
+        )}
       </main>
 
       {/* Selected Note Sidebar */}
@@ -261,26 +295,57 @@ function App() {
                 </div>
               )}
 
+              {/* Linked Notes Section */}
+              <LinkedNotes 
+                currentNote={selectedNote}
+                allNotes={notes}
+                onNoteClick={handleViewNote}
+              />
+
               <div className="pt-4" style={{ borderTop: `1px solid var(--border-color)` }}>
-                <div className="flex space-x-2">
+                <div className="space-y-2">
                   <button
-                    onClick={() => handleEditNote(selectedNote)}
-                    className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200"
+                    onClick={() => setVersionHistoryNote(selectedNote.id)}
+                    className="w-full px-4 py-2 rounded-lg transition-colors duration-200 text-sm"
+                    style={{ 
+                      backgroundColor: 'var(--bg-primary)',
+                      color: 'var(--text-primary)',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: 'var(--border-color)'
+                    }}
                   >
-                    Edit
+                    📜 View Version History
                   </button>
-                  <button
-                    onClick={() => handleDeleteNote(selectedNote.id)}
-                    className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
-                  >
-                    Delete
-                  </button>
+                  
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEditNote(selectedNote)}
+                      className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteNote(selectedNote.id)}
+                      className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Version History Modal */}
+      <VersionHistoryModal
+        noteId={versionHistoryNote}
+        isOpen={versionHistoryNote !== null}
+        onClose={() => setVersionHistoryNote(null)}
+        onRestore={handleRestoreVersion}
+      />
 
       {/* Note Form Modal */}
       <NoteForm

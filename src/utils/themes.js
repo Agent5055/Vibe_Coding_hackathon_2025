@@ -125,3 +125,41 @@ export const getThemeIconData = (theme) => {
     };
   }
 };
+
+// Export theme configuration as JSON
+export const exportThemeConfig = (theme) => {
+  return JSON.stringify(theme, null, 2);
+};
+
+// Import and validate theme configuration
+export const importThemeConfig = (jsonString) => {
+  try {
+    const theme = JSON.parse(jsonString);
+    return validateThemeConfig(theme) ? theme : null;
+  } catch (error) {
+    console.error('Error parsing theme config:', error);
+    return null;
+  }
+};
+
+// Validate theme configuration structure
+export const validateThemeConfig = (theme) => {
+  if (!theme || typeof theme !== 'object') return false;
+  
+  const requiredFields = ['id', 'name', 'icon', 'color', 'bgClass', 'cardClass', 'textClass', 'borderClass'];
+  
+  for (const field of requiredFields) {
+    if (!(field in theme)) {
+      console.error(`Missing required field: ${field}`);
+      return false;
+    }
+  }
+  
+  // Validate icon type
+  if (!['sun', 'moon'].includes(theme.icon)) {
+    console.error('Invalid icon type. Must be "sun" or "moon"');
+    return false;
+  }
+  
+  return true;
+};

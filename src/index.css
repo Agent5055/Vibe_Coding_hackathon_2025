@@ -356,3 +356,54 @@ body {
 .backdrop-blur-3xl {
   backdrop-filter: blur(64px);
 }
+
+/* Layout Modes */
+.layout-compact {
+  --spacing-card: 0.75rem;
+  --spacing-section: 1rem;
+  --spacing-element: 0.5rem;
+  --font-size-base: 0.875rem;
+}
+
+.layout-compact .card,
+.layout-compact .rounded-xl {
+  padding: var(--spacing-card);
+}
+
+.layout-compact .space-y-6 > *:not(:last-child) {
+  margin-bottom: var(--spacing-section);
+}
+
+.layout-compact .space-y-4 > *:not(:last-child) {
+  margin-bottom: var(--spacing-element);
+}
+
+.layout-compact .text-base,
+.layout-compact p {
+  font-size: var(--font-size-base);
+}
+
+.layout-cozy {
+  --spacing-card: 1.5rem;
+  --spacing-section: 1.5rem;
+  --spacing-element: 1rem;
+  --font-size-base: 1rem;
+}
+
+.layout-cozy .card,
+.layout-cozy .rounded-xl {
+  padding: var(--spacing-card);
+}
+
+.layout-cozy .space-y-6 > *:not(:last-child) {
+  margin-bottom: var(--spacing-section);
+}
+
+.layout-cozy .space-y-4 > *:not(:last-child) {
+  margin-bottom: var(--spacing-element);
+}
+
+.layout-cozy .text-base,
+.layout-cozy p {
+  font-size: var(--font-size-base);
+}

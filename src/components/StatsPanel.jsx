@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import { getWordFrequency } from '../utils/keywords.js';
+import HeatmapPanel from './HeatmapPanel.jsx';
+import GrowthChart from './GrowthChart.jsx';
 
 const StatsPanel = ({ notes }) => {
   const stats = useMemo(() => {
@@ -10,7 +12,13 @@ const StatsPanel = ({ notes }) => {
         totalKeywords: 0,
         tagDistribution: [],
         mostConnected: [],
-        wordFrequency: []
+        wordFrequency: [],
+        totalWords: 0,
+        totalReadingTime: 0,
+        longestNote: null,
+        avgKeywords: 0,
+        hubNotes: [],
+        isolatedNotes: []
       };
     }
 
@@ -20,6 +28,20 @@ const StatsPanel = ({ notes }) => {
     const uniqueTags = [...new Set(allTags)];
     const totalTags = uniqueTags.length;
     const totalKeywords = notes.reduce((sum, note) => sum + (note.keywords?.length || 0), 0);
+
+    // NEW: Word count and reading time stats
+    const totalWords = notes.reduce((sum, note) => sum + (note.wordCount || 0), 0);
+    const totalReadingTime = notes.reduce((sum, note) => sum + (note.readingTime || 0), 0);
+    
+    // NEW: Longest note
+    const longestNote = notes.reduce((longest, note) => {
+      const noteLength = (note.body || '').length;
+      const longestLength = longest ? (longest.body || '').length : 0;
+      return noteLength > longestLength ? note : longest;
+    }, null);
+    
+    // NEW: Average keywords per note
+    const avgKeywords = totalNotes > 0 ? (totalKeywords / totalNotes).toFixed(1) : 0;
 
     // Tag distribution
     const tagCount = {};
@@ -48,6 +70,15 @@ const StatsPanel = ({ notes }) => {
       .slice(0, 5)
       .filter(item => item.connections > 0);
 
+    // NEW: Hub notes (notes with 5+ connections)
+    const hubNotes = noteConnections
+      .filter(item => item.connections >= 5)
+      .sort((a, b) => b.connections - a.connections);
+
+    // NEW: Isolated notes (notes with 0 connections)
+    const isolatedNotes = noteConnections
+      .filter(item => item.connections === 0);
+
     // Word frequency
     const wordFrequency = getWordFrequency(notes);
 
@@ -57,7 +88,13 @@ const StatsPanel = ({ notes }) => {
       totalKeywords,
       tagDistribution,
       mostConnected,
-      wordFrequency
+      wordFrequency,
+      totalWords,
+      totalReadingTime,
+      longestNote,
+      avgKeywords,
+      hubNotes,
+      isolatedNotes
     };
   }, [notes]);
 
@@ -83,6 +120,9 @@ const StatsPanel = ({ notes }) => {
 
   return (
     <div className="space-y-6">
+      {/* Knowledge Growth Chart */}
+      <GrowthChart notes={notes} />
+
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}>
@@ -128,6 +168,76 @@ const StatsPanel = ({ notes }) => {
         </div>
       </div>
 
+      {/* Note Statistics Section */}
+      <div 
+        className="rounded-xl p-6 shadow-sm"
+        style={{ 
+          backgroundColor: 'var(--bg-secondary)',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: 'var(--border-color)'
+        }}
+      >
+        <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+          Note Statistics
+        </h3>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center">
+            <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              {stats.totalWords.toLocaleString()}
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Total Words
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              {stats.totalReadingTime} min
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Reading Time
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              {stats.longestNote ? (stats.longestNote.body || '').length : 0}
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Longest Note
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              {stats.avgKeywords}
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Avg Keywords/Note
+            </p>
+          </div>
+        </div>
+
+        {stats.longestNote && (
+          <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>
+            <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+              Your Longest Note:
+            </p>
+            <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
+              {stats.longestNote.title || 'Untitled'}
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              {(stats.longestNote.body || '').length} characters · {stats.longestNote.wordCount || 0} words
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Keyword Insights Section */}
+      <HeatmapPanel notes={notes} />
+
       {/* Tag Distribution */}
       {stats.tagDistribution.length > 0 && (
         <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}>
@@ -160,10 +270,55 @@ const StatsPanel = ({ notes }) => {
         </div>
       )}
 
-      {/* Most Connected Notes */}
-      {stats.mostConnected.length > 0 && (
-        <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}>
-          <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Most Connected Notes</h3>
+      {/* Network Overview Section */}
+      <div 
+        className="rounded-xl p-6 shadow-sm"
+        style={{ 
+          backgroundColor: 'var(--bg-secondary)',
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderColor: 'var(--border-color)'
+        }}
+      >
+        <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+          Network Overview
+        </h3>
+        
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-primary-500">
+              {stats.mostConnected.length}
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Connected Notes
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-3xl font-bold text-green-500">
+              {stats.hubNotes.length}
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Hub Notes
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-3xl font-bold text-orange-500">
+              {stats.isolatedNotes.length}
+            </p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Isolated Notes
+            </p>
+          </div>
+        </div>
+
+        {/* Most Connected Notes */}
+        {stats.mostConnected.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-md font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+              Most Connected Notes
+            </h4>
           <div className="space-y-3">
             {stats.mostConnected.map(({ note, connections }, index) => (
               <div key={note.id} className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-primary)' }}>
@@ -189,10 +344,55 @@ const StatsPanel = ({ notes }) => {
               </div>
             ))}
           </div>
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Word Frequency Chart */}
+        {/* Hub Notes (5+ connections) */}
+        {stats.hubNotes.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-md font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+              Hub Notes (5+ connections)
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {stats.hubNotes.map(({ note, connections }) => (
+                <span
+                  key={note.id}
+                  className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-700"
+                  title={`${connections} connections`}
+                >
+                  {note.title || 'Untitled'} ({connections})
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Isolated Notes */}
+        {stats.isolatedNotes.length > 0 && (
+          <div>
+            <h4 className="text-md font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+              Isolated Notes
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {stats.isolatedNotes.slice(0, 10).map(({ note }) => (
+                <span
+                  key={note.id}
+                  className="px-3 py-1 rounded-full text-sm bg-orange-100 text-orange-700"
+                >
+                  {note.title || 'Untitled'}
+                </span>
+              ))}
+              {stats.isolatedNotes.length > 10 && (
+                <span className="px-3 py-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  +{stats.isolatedNotes.length - 10} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Word Frequency Chart - Now deprecated in favor of Heatmap, but keep for compatibility */}
       {stats.wordFrequency.length > 0 && (
         <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border-color)' }}>
           <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Most Frequent Words</h3>
