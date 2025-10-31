@@ -3,6 +3,8 @@
 A modern, intelligent note-taking application with mind-map visualization and automatic keyword linking. Built with React, Vite, and TailwindCSS.
 
 Link to currently running website: https://vibe-coding-hackathon-2025.onrender.com/
+AI used: ChatGPT 5.0, Gemini 2.5 pro, Claude 4.5 sonnet (thinking), and a little bit of cursor auto (didn't realize I was using it, switched to Claude after)
+AI chats/prompts: Prompts and AI Models Folder
 ## Features
 
 ### Core Features
