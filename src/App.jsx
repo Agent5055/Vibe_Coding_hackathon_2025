@@ -351,6 +351,9 @@ function App() {
       } else {
         await notebookManager.create(notebookData);
       }
+      // Reload notebooks immediately so NoteForm has latest list
+      const refreshedNotebooks = await notebookManager.getAll();
+      setNotebooks(refreshedNotebooks);
       setIsNotebookModalOpen(false);
       setEditingNotebook(null);
       setPreselectedFolderId(null);
@@ -389,6 +392,9 @@ function App() {
         await folderManager.create(itemData);
       } else {
         await notebookManager.create(itemData);
+        // Reload notebooks after creation via AddItem modal
+        const refreshedNotebooks = await notebookManager.getAll();
+        setNotebooks(refreshedNotebooks);
       }
       setIsAddItemModalOpen(false);
       setAddItemParentFolderId(null);
