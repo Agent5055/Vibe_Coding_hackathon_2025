@@ -33,6 +33,15 @@ A modern, intelligent note-taking application with mind-map visualization and au
 - **Local Storage with IndexedDB**: Efficient storage for 500+ notes, all data stored locally in your browser
 - **Responsive Design**: Works perfectly on desktop and mobile devices
 
+### Organization (Folders & Notebooks)
+- **Folder Tree Sidebar**: Expandable/collapsible folder tree with nested folders and notebooks
+- **Clean Counts**: Single numeric badge shows direct item count (subfolders + notebooks)
+- **Root Notebooks**: Create notebooks at the root level without selecting a folder
+- **Context Menu**: Right-click folders/notebooks to edit or delete
+- **Quick Add**: Add items directly inside a folder
+- **Expand/Collapse All**: One-click expand/collapse for all folders
+- **Sidebar Toggle**: Toggle sidebar with the button or keyboard shortcut (Ctrl+B)
+
 ### Intelligence & Analytics
 - **Knowledge Growth Chart**: Visualize your note-taking activity over time
 - **Topic Heatmap**: See keyword frequency with color-coded intensity
@@ -261,7 +270,6 @@ The application uses TailwindCSS with a custom design system. Key customization 
 The following features are planned for future releases:
 
 ### Advanced Organization
-- **Notebooks/Folders**: Hierarchical organization system for notes
 - **Note Templates**: Reusable templates for common note types (Meeting Notes, Daily Journal, etc.)
 
 ### Enhanced Linking

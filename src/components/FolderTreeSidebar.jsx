@@ -216,17 +216,6 @@ const FolderTreeSidebar = ({
             </span>
           </div>
           <div className="flex items-center space-x-2">
-            {depth > 0 && itemCount > 0 && (
-              <span 
-                className="text-xs px-2 py-0.5 rounded-full"
-                style={{ 
-                  backgroundColor: 'var(--bg-primary)',
-                  color: 'var(--text-secondary)'
-                }}
-              >
-                {itemCount} {itemCount === 1 ? 'item' : 'items'}
-              </span>
-            )}
             <span 
               className="text-xs px-2 py-0.5 rounded-full"
               style={{ 
@@ -234,7 +223,7 @@ const FolderTreeSidebar = ({
                 color: 'var(--text-secondary)'
               }}
             >
-              {counts.folders[folder.id] || 0}
+              {itemCount}
             </span>
           </div>
         </div>
