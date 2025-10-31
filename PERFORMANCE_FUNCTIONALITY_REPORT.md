@@ -144,16 +144,10 @@ ThoughtWeaver is a privacy-first, intelligent note-taking application that runs 
 - Full-text search across all note content
 - Daily Note quick access for journaling with pre-filled templates
 
-**How to use:**
-1. Click "New Note" or "Daily Note" button in header
-2. Use rich text editor toolbar for formatting (or toggle to plain text)
-3. Create checklists using the task list button
-4. Fill in title, content, and select tags from dropdown
-5. Optional: Enable revision reminder with custom days
-6. Click pin button to keep note at top of list (available on hover in all views)
-7. Save note - keywords are automatically extracted, word count updated
-8. Double-click any note to view in read-only mode
-9. Notes appear in dashboard with all metadata
+**How to use (brief):**
+- Create via "New Note" or "Daily Note" and format with the toolbar
+- Add tags, optional pin/reminder, then save; keywords and stats update automatically
+- Double-click any note to view in read-only mode
 
 **Performance:**
 - Create note: < 50ms
@@ -300,11 +294,9 @@ ThoughtWeaver is a privacy-first, intelligent note-taking application that runs 
 - Includes context menu actions (rename/delete) and quick add inside folders
 - Global expand/collapse all controls and keyboard toggle for sidebar (Ctrl+B)
 
-**How to use:**
-1. Use the left sidebar to create folders and notebooks
-2. Right-click folders/notebooks for rename/delete options
-3. Use the header controls to expand/collapse all
-4. Press Ctrl+B to toggle the sidebar
+**How to use (brief):**
+- Create folders/notebooks in the left sidebar; right-click for edit/delete
+- Expand/collapse all from header controls; toggle sidebar with Ctrl+B
 
 **Performance:**
 - Tree render/update: < 10-20ms for typical hierarchies
@@ -330,13 +322,8 @@ ThoughtWeaver is a privacy-first, intelligent note-taking application that runs 
 - **PNG Export:** Save snapshot of mind map as image file
 - **Responsive:** Adapts to screen size
 
-**How to use:**
-1. Click "Mind Map" tab in navigation
-2. Graph renders automatically
-3. Drag to pan, scroll to zoom
-4. Click nodes to see note details
-5. Use filter panel (left side) to focus on specific notes
-6. Mini-map in corner shows overall structure
+**How to use (brief):**
+- Open "Mind Map", pan/zoom, click nodes for details; use filters and mini-map to focus
 
 **Performance:**
 - Render 50 notes: < 500ms
@@ -373,11 +360,8 @@ Comprehensive analytics with three main sections:
 - Isolated notes (no connections)
 - Knowledge Growth Chart: Line chart showing note creation over time
 
-**How to use:**
-1. Click "Analytics" tab in navigation
-2. Scroll through different metric cards
-3. View Growth Chart to see activity over time
-4. Explore Heatmap to identify main topics
+**How to use (brief):**
+- Open "Analytics" to view stats, growth chart, and heatmap
 
 **Performance:**
 - Calculate all metrics: ~200-300ms for 500 notes
@@ -568,7 +552,13 @@ These are UX enhancements for theme management that were deprioritized for this 
 **Current Behavior:** Toggle switches between light and dark variants of current theme  
 **Theme Selection:** Done through Settings panel (8 themes total: 1 built-in + 7 importable)
 
-#### 5. No Markdown Support
+#### 5. Folder/Notebook Refresh Needed Sometimes
+**Issue:** After creating or moving items in the folder/notebook system, new folders/notebooks/notes occasionally appear only after a refresh or navigating via "Daily Note" (which reloads state).  
+**Impact:** Low-to-moderate UX friction; data is saved correctly, but UI can lag behind.  
+**Workaround:** Click "Daily Note" or refresh the page to force a full state refresh.  
+**Future Fix:** Centralize and debounce update events so the sidebar and lists re-render consistently.
+
+#### 6. No Markdown Support
 **Status:** ✅ **RESOLVED** - Rich text editor with full markdown support implemented  
 **Previous Issue:** Notes were plain text only  
 **Current Implementation:** Tiptap editor with markdown, headings, lists, code blocks, checklists  
