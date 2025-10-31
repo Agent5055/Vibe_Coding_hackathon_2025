@@ -181,12 +181,12 @@ const FolderTreeSidebar = ({
         <div
           className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors duration-200 cursor-pointer ${
             selectedItem?.type === 'folder' && selectedItem?.id === folder.id 
-              ? 'bg-primary-100 dark:bg-primary-900' 
+              ? '' 
               : 'hover:opacity-80'
           }`}
           style={{ 
             backgroundColor: selectedItem?.type === 'folder' && selectedItem?.id === folder.id 
-              ? undefined 
+              ? 'var(--selection-bg)'
               : 'transparent'
           }}
           onClick={() => handleSelect(folder, 'folder')}
@@ -242,14 +242,14 @@ const FolderTreeSidebar = ({
                     key={notebook.id}
                     onClick={() => handleSelect(notebook, 'notebook')}
                     onContextMenu={(e) => handleContextMenu(e, notebook, 'notebook')}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
                       selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id 
-                        ? 'bg-primary-100 dark:bg-primary-900' 
+                        ? '' 
                         : 'hover:opacity-80'
                     }`}
                     style={{ 
                       backgroundColor: selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id 
-                        ? undefined 
+                        ? 'var(--selection-bg)'
                         : 'transparent'
                     }}
                   >
@@ -366,10 +366,10 @@ const FolderTreeSidebar = ({
           <button
             onClick={() => handleSelect({ type: 'all-notes' }, 'all-notes')}
             className={`w-full text-left px-3 py-2 rounded-lg mb-3 transition-colors duration-200 flex items-center justify-between ${
-              selectedItem?.type === 'all-notes' ? 'bg-primary-100 dark:bg-primary-900' : 'hover:opacity-80'
+              selectedItem?.type === 'all-notes' ? '' : 'hover:opacity-80'
             }`}
             style={{ 
-              backgroundColor: selectedItem?.type === 'all-notes' ? undefined : 'transparent',
+              backgroundColor: selectedItem?.type === 'all-notes' ? 'var(--selection-bg)' : 'transparent',
               color: 'var(--text-primary)'
             }}
           >
@@ -437,12 +437,12 @@ const FolderTreeSidebar = ({
                       onContextMenu={(e) => handleContextMenu(e, notebook, 'notebook')}
                       className={`w-full text-left px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
                         selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id 
-                          ? 'bg-primary-100 dark:bg-primary-900' 
+                          ? '' 
                           : 'hover:opacity-80'
                       }`}
                       style={{ 
                         backgroundColor: selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id 
-                          ? undefined 
+                          ? 'var(--selection-bg)'
                           : 'transparent'
                       }}
                     >
