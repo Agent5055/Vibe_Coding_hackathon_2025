@@ -5,6 +5,12 @@ const STORAGE_KEY = 'thoughtweaver_notes';
 let useIndexedDB = false;
 let migrationComplete = false;
 
+// Readiness gate so callers can await initialization
+let readyResolve;
+const storageReadyPromise = new Promise((resolve) => {
+  readyResolve = resolve;
+});
+
 // Initialize storage - attempt IndexedDB first, fallback to LocalStorage
 const initStorage = async () => {
   try {
@@ -32,6 +38,9 @@ const initStorage = async () => {
   } catch (error) {
     console.warn('IndexedDB initialization failed, using LocalStorage:', error);
     useIndexedDB = false;
+  } finally {
+    // Always resolve readiness to avoid deadlocks even on fallback
+    if (typeof readyResolve === 'function') readyResolve();
   }
 };
 
@@ -39,6 +48,7 @@ const initStorage = async () => {
 initStorage().catch(err => {
   console.error('Storage initialization error:', err);
   useIndexedDB = false;
+  if (typeof readyResolve === 'function') readyResolve();
 });
 
 // Helper: Strip HTML tags from text
@@ -96,9 +106,16 @@ const enhanceNote = (note) => {
 };
 
 export const storage = {
+  // Allow callers to await initialization readiness
+  whenReady: async () => {
+    return storageReadyPromise;
+  },
+
   // Get all notes
   getAllNotes: async () => {
     try {
+      // Ensure initialization/migration completed before first read
+      await storageReadyPromise;
       if (useIndexedDB) {
         const notes = await indexedDBWrapper.getAllNotes();
         return notes.map(enhanceNote);

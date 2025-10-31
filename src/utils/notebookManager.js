@@ -2,6 +2,7 @@
 // Notebooks contain notes and belong to folders
 
 import indexedDBWrapper from './indexedDB.js';
+import { storage } from './storage.js';
 
 const STORAGE_KEY = 'thoughtweaver_notebooks';
 let useIndexedDB = false;
@@ -193,6 +194,10 @@ class NotebookManager {
 
   // Get all notebooks
   async getAll() {
+    // Ensure base storage init has completed to avoid early empty reads
+    if (typeof storage?.whenReady === 'function') {
+      await storage.whenReady();
+    }
     await this.load();
     return [...this.notebooks].sort((a, b) => 
       new Date(a.createdAt) - new Date(b.createdAt)

@@ -48,6 +48,10 @@ function App() {
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Wait for storage initialization/migration to complete
+        if (typeof storage.whenReady === 'function') {
+          await storage.whenReady();
+        }
         const loadedNotes = await storage.getAllNotes();
         setNotes(loadedNotes || []);
         
@@ -309,6 +313,8 @@ function App() {
       setIsFolderModalOpen(false);
       setEditingFolder(null);
       setPreselectedParentId(null);
+      // Immediately refresh folders list
+      setFolders(folderManager.getAll());
     } catch (error) {
       throw error; // Let modal handle the error
     }
@@ -325,6 +331,10 @@ function App() {
         if (selectedItem?.type === 'folder' && selectedItem?.id === folder.id) {
           setSelectedItem({ type: 'all-notes' });
         }
+        // Refresh folders and notebooks after deletion
+        setFolders(folderManager.getAll());
+        const refreshedNotebooks = await notebookManager.getAll();
+        setNotebooks(refreshedNotebooks);
       } catch (error) {
         console.error('Error deleting folder:', error);
         alert('Failed to delete folder');
@@ -370,7 +380,9 @@ function App() {
         if (selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id) {
           setSelectedItem({ type: 'all-notes' });
         }
-        // Reload notes to update their notebook associations display
+        // Reload notes and notebooks to update associations display
+        const refreshedNotebooks = await notebookManager.getAll();
+        setNotebooks(refreshedNotebooks);
         const updatedNotes = await storage.getAllNotes();
         setNotes(updatedNotes);
       } catch (error) {
@@ -406,7 +418,8 @@ function App() {
   // Filter notes based on selected item
   const getFilteredNotes = () => {
     if (selectedItem.type === 'all-notes') {
-      return notes.filter(note => !note.notebookIds || note.notebookIds.length === 0);
+      // Show all notes to avoid empty view confusion
+      return notes;
     } else if (selectedItem.type === 'notebook') {
       return notes.filter(note => note.notebookIds && note.notebookIds.includes(selectedItem.id));
     } else if (selectedItem.type === 'folder') {
