@@ -106,6 +106,44 @@
   --selection-bg: rgba(255, 255, 255, 0.08);
 }
 
+/* Sky Theme */
+.theme-sky-light {
+  --bg-primary: #f0f9ff; /* light sky */
+  --bg-secondary: #ffffff;
+  --text-primary: #0c4a6e; /* deep blue text */
+  --text-secondary: #0369a1; /* accent blue */
+  --border-color: #bae6fd; /* light blue border */
+  --selection-bg: rgba(0, 0, 0, 0.06);
+}
+
+.theme-sky-dark {
+  --bg-primary: #082f49; /* dark slate/blue */
+  --bg-secondary: #0b3a5b;
+  --text-primary: #e0f2fe; /* very light blue text */
+  --text-secondary: #7dd3fc; /* sky accent */
+  --border-color: #075985; /* border */
+  --selection-bg: rgba(255, 255, 255, 0.08);
+}
+
+/* Rose Theme */
+.theme-rose-light {
+  --bg-primary: #fff1f2; /* rose-50 */
+  --bg-secondary: #ffffff;
+  --text-primary: #881337; /* rose-900 */
+  --text-secondary: #be123c; /* rose-700 */
+  --border-color: #fecdd3; /* rose-200 */
+  --selection-bg: rgba(0, 0, 0, 0.06);
+}
+
+.theme-rose-dark {
+  --bg-primary: #4c0519; /* rose-950 */
+  --bg-secondary: #7f1d1d; /* deep rose */
+  --text-primary: #ffe4e6; /* rose-100 */
+  --text-secondary: #fecdd3; /* rose-200 */
+  --border-color: #be123c; /* rose-600 */
+  --selection-bg: rgba(255, 255, 255, 0.08);
+}
+
 /* Sidebar Styles */
 .sidebar-scrollbar::-webkit-scrollbar {
   width: 8px;
