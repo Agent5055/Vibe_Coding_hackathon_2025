@@ -42,6 +42,9 @@ A modern, intelligent note-taking application with mind-map visualization and au
 - **Expand/Collapse All**: One-click expand/collapse for all folders
 - **Sidebar Toggle**: Toggle sidebar with the button or keyboard shortcut (Ctrl+B)
 
+![Sidebar & Organization](./docs/screenshots/sidebar-organization.png)
+![Root Notebooks](./docs/screenshots/notebooks-root.png)
+
 ### Intelligence & Analytics
 - **Knowledge Growth Chart**: Visualize your note-taking activity over time
 - **Topic Heatmap**: See keyword frequency with color-coded intensity
@@ -77,6 +80,8 @@ Each theme has both **light and dark variants**. Switch between light/dark modes
 For detailed theme documentation, custom theme creation, and import instructions, see the [Themes Guide](THEMES.md).
 
 👉 **[View Full Theme Documentation](THEMES.md)** for screenshots and details about each theme.
+
+![Theme Management](./docs/screenshots/settings-themes.png)
 
 ## 🧩 Local Intelligence
 
@@ -192,12 +197,16 @@ The built application can be deployed to:
 3. Add tags to categorize your notes
 4. Save to automatically extract keywords
 
+![Note Editor](./docs/screenshots/note-editor.png)
+
 ### Mind Map View
 
 1. Switch to the "Mind Map" tab
 2. See your notes as connected nodes
 3. Click nodes to view note details
 4. Use zoom and pan controls to navigate
+
+![Mind Map](./docs/screenshots/mind-map.png)
 
 ### Analytics
 
@@ -207,6 +216,9 @@ The built application can be deployed to:
    - Most used tags
    - Most connected notes
    - Word frequency analysis
+
+![Growth Chart](./docs/screenshots/analytics-growth-chart.png)
+![Topic Heatmap](./docs/screenshots/analytics-heatmap.png)
 
 ## Architecture
 
