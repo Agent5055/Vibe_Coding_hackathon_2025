@@ -30,7 +30,7 @@ const CreateNotebookModal = ({ isOpen, onClose, onSave, editNotebook, preselecte
     } else {
       setFormData({
         name: '',
-        folderId: preselectedFolderId || (loadedFolders.length > 0 ? loadedFolders[0].id : ''),
+        folderId: preselectedFolderId || '',
         color: DEFAULT_COLORS[0],
         icon: DEFAULT_ICONS[0],
         description: ''
@@ -61,11 +61,6 @@ const CreateNotebookModal = ({ isOpen, onClose, onSave, editNotebook, preselecte
     
     if (!formData.name.trim()) {
       setError('Notebook name is required');
-      return;
-    }
-
-    if (!formData.folderId) {
-      setError('Please select a folder');
       return;
     }
 
@@ -163,7 +158,7 @@ const CreateNotebookModal = ({ isOpen, onClose, onSave, editNotebook, preselecte
           {/* Folder Selector */}
           <div>
             <label htmlFor="folder-select" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-              Parent Folder
+              Parent Folder (Optional)
             </label>
             <select
               id="folder-select"
@@ -178,6 +173,7 @@ const CreateNotebookModal = ({ isOpen, onClose, onSave, editNotebook, preselecte
                 color: 'var(--text-primary)' 
               }}
             >
+              <option value="">📓 No Folder (Root Level)</option>
               {folders.map((folder) => (
                 <option key={folder.id} value={folder.id}>
                   {folder.icon} {folder.name}

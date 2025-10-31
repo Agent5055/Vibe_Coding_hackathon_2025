@@ -39,6 +39,7 @@ function App() {
   const [editingFolder, setEditingFolder] = useState(null);
   const [editingNotebook, setEditingNotebook] = useState(null);
   const [preselectedFolderId, setPreselectedFolderId] = useState(null);
+  const [preselectedParentId, setPreselectedParentId] = useState(null);
 
   // Load notes, theme, layout, and organization data on mount
   useEffect(() => {
@@ -284,8 +285,9 @@ function App() {
     setSelectedItem(item);
   };
 
-  const handleCreateFolder = () => {
+  const handleCreateFolder = (parentId = null) => {
     setEditingFolder(null);
+    setPreselectedParentId(parentId);
     setIsFolderModalOpen(true);
   };
 
@@ -303,6 +305,7 @@ function App() {
       }
       setIsFolderModalOpen(false);
       setEditingFolder(null);
+      setPreselectedParentId(null);
     } catch (error) {
       throw error; // Let modal handle the error
     }
@@ -326,7 +329,7 @@ function App() {
     }
   };
 
-  const handleCreateNotebook = (folderId) => {
+  const handleCreateNotebook = (folderId = null) => {
     setPreselectedFolderId(folderId);
     setEditingNotebook(null);
     setIsNotebookModalOpen(true);
@@ -674,9 +677,11 @@ function App() {
         onClose={() => {
           setIsFolderModalOpen(false);
           setEditingFolder(null);
+          setPreselectedParentId(null);
         }}
         onSave={handleSaveFolder}
         editFolder={editingFolder}
+        preselectedParentId={preselectedParentId}
       />
 
       {/* Notebook Modal */}

@@ -1,31 +1,40 @@
 import { useState, useEffect } from 'react';
 import { DEFAULT_COLORS, DEFAULT_ICONS } from '../utils/folderManager.js';
+import folderManager from '../utils/folderManager.js';
 
-const CreateFolderModal = ({ isOpen, onClose, onSave, editFolder }) => {
+const CreateFolderModal = ({ isOpen, onClose, onSave, editFolder, preselectedParentId }) => {
   const [formData, setFormData] = useState({
     name: '',
     color: DEFAULT_COLORS[0],
-    icon: DEFAULT_ICONS[0]
+    icon: DEFAULT_ICONS[0],
+    parentId: ''
   });
+  const [folders, setFolders] = useState([]);
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    // Load all folders
+    const allFolders = folderManager.getAll();
+    setFolders(allFolders);
+
     if (editFolder) {
       setFormData({
         name: editFolder.name || '',
         color: editFolder.color || DEFAULT_COLORS[0],
-        icon: editFolder.icon || DEFAULT_ICONS[0]
+        icon: editFolder.icon || DEFAULT_ICONS[0],
+        parentId: editFolder.parentId || ''
       });
     } else {
       setFormData({
         name: '',
         color: DEFAULT_COLORS[0],
-        icon: DEFAULT_ICONS[0]
+        icon: DEFAULT_ICONS[0],
+        parentId: preselectedParentId || ''
       });
     }
     setError('');
-  }, [editFolder, isOpen]);
+  }, [editFolder, preselectedParentId, isOpen]);
 
   // ESC key handler
   useEffect(() => {
@@ -116,6 +125,38 @@ const CreateFolderModal = ({ isOpen, onClose, onSave, editFolder }) => {
               }}
               autoFocus
             />
+          </div>
+
+          {/* Parent Folder Selector */}
+          <div>
+            <label htmlFor="parent-folder-select" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
+              Parent Folder (Optional)
+            </label>
+            <select
+              id="parent-folder-select"
+              value={formData.parentId}
+              onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
+              className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+              style={{ 
+                backgroundColor: 'var(--bg-primary)', 
+                borderWidth: '1px', 
+                borderStyle: 'solid', 
+                borderColor: 'var(--border-color)', 
+                color: 'var(--text-primary)' 
+              }}
+            >
+              <option value="">📁 Root Level (No Parent)</option>
+              {folders
+                .filter(folder => !editFolder || folder.id !== editFolder.id)
+                .map((folder) => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.icon} {folder.name}
+                  </option>
+                ))}
+            </select>
+            <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
+              💡 Create nested folder hierarchies by selecting a parent folder
+            </p>
           </div>
 
           {/* Icon Selector */}

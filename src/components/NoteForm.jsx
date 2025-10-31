@@ -396,6 +396,29 @@ const NoteForm = ({ note, notebooks, folders, onSave, onCancel, isOpen }) => {
                   defaultValue=""
                 >
                   <option value="" disabled>Select a notebook...</option>
+                  
+                  {/* Root Notebooks (without folders) */}
+                  {(() => {
+                    const rootNotebooks = notebooks.filter(nb => !nb.folderId || nb.folderId === '');
+                    if (rootNotebooks.length > 0) {
+                      return (
+                        <optgroup label="📓 Root Notebooks">
+                          {rootNotebooks.map(notebook => (
+                            <option 
+                              key={notebook.id} 
+                              value={notebook.id}
+                              disabled={formData.notebookIds.includes(notebook.id)}
+                            >
+                              {notebook.icon} {notebook.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      );
+                    }
+                    return null;
+                  })()}
+                  
+                  {/* Folders with Notebooks */}
                   {folders && folders.map(folder => {
                     const folderNotebooks = notebooks.filter(nb => nb.folderId === folder.id);
                     if (folderNotebooks.length === 0) return null;

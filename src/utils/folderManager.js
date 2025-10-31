@@ -62,11 +62,17 @@ class FolderManager {
       throw new Error('A folder with this name already exists');
     }
 
+    // Validate parent folder if provided
+    if (folderData.parentId && !this.exists(folderData.parentId)) {
+      throw new Error('Parent folder does not exist');
+    }
+
     const newFolder = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       name: folderData.name.trim(),
       color: folderData.color || DEFAULT_COLORS[Math.floor(Math.random() * DEFAULT_COLORS.length)],
       icon: folderData.icon || DEFAULT_ICONS[0],
+      parentId: folderData.parentId || null, // Support nested folders
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -144,6 +150,33 @@ class FolderManager {
   // Get folder count
   getCount() {
     return this.folders.length;
+  }
+
+  // Get root-level folders (no parent)
+  getRoot() {
+    return this.folders.filter(f => !f.parentId).sort((a, b) => 
+      new Date(a.createdAt) - new Date(b.createdAt)
+    );
+  }
+
+  // Get child folders of a parent
+  getChildren(parentId) {
+    return this.folders.filter(f => f.parentId === parentId).sort((a, b) => 
+      new Date(a.createdAt) - new Date(b.createdAt)
+    );
+  }
+
+  // Get all descendants of a folder (recursive)
+  getDescendants(folderId) {
+    const descendants = [];
+    const children = this.getChildren(folderId);
+    
+    for (const child of children) {
+      descendants.push(child);
+      descendants.push(...this.getDescendants(child.id));
+    }
+    
+    return descendants;
   }
 
   // Export folders as JSON
