@@ -319,6 +319,9 @@ The following features are planned for future releases:
 - **Real-time Analytics**: Computed on-demand with memoization
 - **Responsive UI**: Smooth 60fps animations and transitions
 
+### Known Issues
+- **Editor scrolling performance**: In very long notes, scrolling in the edit view can feel sluggish. Planned optimizations include virtualization and lighter DOM updates.
+
 ## Contributing
 
 1. Fork the repository
