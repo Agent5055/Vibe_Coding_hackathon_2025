@@ -1,5 +1,8 @@
 # ThoughtWeaver - Smart Learning Tracker
 
+<img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/5e0323bd-bf6d-4952-bdf2-d2b6c5dbbc07" />
+
+
 A modern, intelligent note-taking application with mind-map visualization and automatic keyword linking. Built with React, Vite, and TailwindCSS.
 
 Link to currently running website: https://vibe-coding-hackathon-2025.onrender.com/
@@ -216,8 +219,10 @@ The built application can be deployed to:
    - Most used tags
    - Most connected notes
    - Word frequency analysis
+   - 
+<img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/7d6e8bd1-4687-4539-b0a3-12c9086d5162" />
 
-
+<img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/18a2bb60-8fc2-4821-9a5f-cee412f1031e" />
 
 ## Architecture
 
