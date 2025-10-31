@@ -488,10 +488,11 @@ function App() {
 
       {/* Main Content */}
       <main 
-        className="transition-all duration-300 px-4 sm:px-6 lg:px-8 py-8"
+        className="transition-all duration-300 py-8"
         style={{ 
           marginLeft: isSidebarCollapsed ? '3rem' : '18rem',
-          maxWidth: 'calc(100% - ' + (isSidebarCollapsed ? '3rem' : '18rem') + ')'
+          paddingLeft: '1rem',
+          paddingRight: '1rem'
         }}
       >
         {activeView === 'list' && (
