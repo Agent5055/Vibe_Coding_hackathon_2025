@@ -176,17 +176,29 @@ export const findRelatedNotes = (currentNote, allNotes, minSharedKeywords = 2) =
 // Get word frequency across all notes
 export const getWordFrequency = (notes) => {
   const wordCount = {};
-  
+
   notes.forEach(note => {
-    const text = `${note.title || ''} ${note.body || ''}`.trim();
-    const keywords = extractKeywords(text);
-    
-    keywords.forEach(keyword => {
-      wordCount[keyword] = (wordCount[keyword] || 0) + 1;
+    const title = (note.title || '').toLowerCase();
+    const body = stripHTML(note.body || '');
+    const combined = `${title} ${body}`
+      .toLowerCase()
+      .replace(/[^\/\w\s]/g, ' ') // remove punctuation (keep word chars and space)
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!combined) return;
+
+    combined.split(' ').forEach(word => {
+      if (
+        word.length > 2 &&
+        !STOP_WORDS.has(word) &&
+        !/^\d+$/.test(word)
+      ) {
+        wordCount[word] = (wordCount[word] || 0) + 1;
+      }
     });
   });
 
   return Object.entries(wordCount)
-    .sort(([,a], [,b]) => b - a)
-    .slice(0, 20); // Top 20 most frequent words
+    .sort(([, a], [, b]) => b - a);
 };
