@@ -127,37 +127,6 @@ const CreateFolderModal = ({ isOpen, onClose, onSave, editFolder, preselectedPar
             />
           </div>
 
-          {/* Parent Folder Selector */}
-          <div>
-            <label htmlFor="parent-folder-select" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-              Parent Folder (Optional)
-            </label>
-            <select
-              id="parent-folder-select"
-              value={formData.parentId}
-              onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-              style={{ 
-                backgroundColor: 'var(--bg-primary)', 
-                borderWidth: '1px', 
-                borderStyle: 'solid', 
-                borderColor: 'var(--border-color)', 
-                color: 'var(--text-primary)' 
-              }}
-            >
-              <option value="">📁 Root Level (No Parent)</option>
-              {folders
-                .filter(folder => !editFolder || folder.id !== editFolder.id)
-                .map((folder) => (
-                  <option key={folder.id} value={folder.id}>
-                    {folder.icon} {folder.name}
-                  </option>
-                ))}
-            </select>
-            <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
-              💡 Create nested folder hierarchies by selecting a parent folder
-            </p>
-          </div>
 
           {/* Icon Selector */}
           <div>

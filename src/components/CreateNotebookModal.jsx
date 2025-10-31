@@ -155,32 +155,6 @@ const CreateNotebookModal = ({ isOpen, onClose, onSave, editNotebook, preselecte
             />
           </div>
 
-          {/* Folder Selector */}
-          <div>
-            <label htmlFor="folder-select" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-              Parent Folder (Optional)
-            </label>
-            <select
-              id="folder-select"
-              value={formData.folderId}
-              onChange={(e) => setFormData({ ...formData, folderId: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-              style={{ 
-                backgroundColor: 'var(--bg-primary)', 
-                borderWidth: '1px', 
-                borderStyle: 'solid', 
-                borderColor: 'var(--border-color)', 
-                color: 'var(--text-primary)' 
-              }}
-            >
-              <option value="">📓 No Folder (Root Level)</option>
-              {folders.map((folder) => (
-                <option key={folder.id} value={folder.id}>
-                  {folder.icon} {folder.name}
-                </option>
-              ))}
-            </select>
-          </div>
 
           {/* Description */}
           <div>

@@ -17,6 +17,7 @@ import NoteViewModal from './components/NoteViewModal.jsx';
 import FolderTreeSidebar from './components/FolderTreeSidebar.jsx';
 import CreateFolderModal from './components/CreateFolderModal.jsx';
 import CreateNotebookModal from './components/CreateNotebookModal.jsx';
+import AddItemModal from './components/AddItemModal.jsx';
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -36,10 +37,12 @@ function App() {
   const [selectedItem, setSelectedItem] = useState({ type: 'all-notes' });
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [isNotebookModalOpen, setIsNotebookModalOpen] = useState(false);
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [editingFolder, setEditingFolder] = useState(null);
   const [editingNotebook, setEditingNotebook] = useState(null);
   const [preselectedFolderId, setPreselectedFolderId] = useState(null);
   const [preselectedParentId, setPreselectedParentId] = useState(null);
+  const [addItemParentFolderId, setAddItemParentFolderId] = useState(null);
 
   // Load notes, theme, layout, and organization data on mount
   useEffect(() => {
@@ -374,6 +377,26 @@ function App() {
     }
   };
 
+  // Handle adding items inside folders (unified modal)
+  const handleAddItemInFolder = (folderId) => {
+    setAddItemParentFolderId(folderId);
+    setIsAddItemModalOpen(true);
+  };
+
+  const handleSaveAddItem = async (itemType, itemData) => {
+    try {
+      if (itemType === 'folder') {
+        await folderManager.create(itemData);
+      } else {
+        await notebookManager.create(itemData);
+      }
+      setIsAddItemModalOpen(false);
+      setAddItemParentFolderId(null);
+    } catch (error) {
+      throw error; // Let modal handle the error
+    }
+  };
+
   // Filter notes based on selected item
   const getFilteredNotes = () => {
     if (selectedItem.type === 'all-notes') {
@@ -483,6 +506,7 @@ function App() {
         onSelectItem={handleSelectItem}
         onCreateFolder={handleCreateFolder}
         onCreateNotebook={handleCreateNotebook}
+        onAddItemInFolder={handleAddItemInFolder}
         onEditFolder={handleEditFolder}
         onEditNotebook={handleEditNotebook}
         onDeleteFolder={handleDeleteFolder}
@@ -695,6 +719,17 @@ function App() {
         onSave={handleSaveNotebook}
         editNotebook={editingNotebook}
         preselectedFolderId={preselectedFolderId}
+      />
+
+      {/* Add Item Modal (for adding items inside folders) */}
+      <AddItemModal
+        isOpen={isAddItemModalOpen}
+        onClose={() => {
+          setIsAddItemModalOpen(false);
+          setAddItemParentFolderId(null);
+        }}
+        onSave={handleSaveAddItem}
+        parentFolderId={addItemParentFolderId}
       />
     </div>
   );
