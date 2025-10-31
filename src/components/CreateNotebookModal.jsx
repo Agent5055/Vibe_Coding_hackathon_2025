@@ -79,30 +79,7 @@ const CreateNotebookModal = ({ isOpen, onClose, onSave, editNotebook, preselecte
 
   if (!isOpen) return null;
 
-  // Check if we have folders
-  if (folders.length === 0) {
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div 
-          className="rounded-2xl shadow-2xl w-full max-w-md p-6"
-          style={{ backgroundColor: 'var(--bg-secondary)' }}
-        >
-          <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            No Folders Available
-          </h2>
-          <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
-            You need to create at least one folder before creating a notebook.
-          </p>
-          <button
-            onClick={onClose}
-            className="w-full px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all duration-200"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // Allow creating notebooks even if there are no folders (root notebooks)
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">

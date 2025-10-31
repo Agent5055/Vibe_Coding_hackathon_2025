@@ -88,9 +88,9 @@ class NotebookManager {
       throw new Error('Notebook name is required');
     }
 
-    // Validate folderId
+    // Normalize folderId: allow root notebooks when not provided
     if (!notebookData.folderId) {
-      throw new Error('Folder ID is required');
+      notebookData.folderId = '';
     }
 
     // Check for duplicate names within the same folder
@@ -105,7 +105,7 @@ class NotebookManager {
     const newNotebook = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       name: notebookData.name.trim(),
-      folderId: notebookData.folderId,
+      folderId: notebookData.folderId || '',
       color: notebookData.color || DEFAULT_COLORS[Math.floor(Math.random() * DEFAULT_COLORS.length)],
       icon: notebookData.icon || DEFAULT_ICONS[0],
       description: notebookData.description || '',
