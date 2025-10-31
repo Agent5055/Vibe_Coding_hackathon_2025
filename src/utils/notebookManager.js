@@ -116,6 +116,8 @@ class NotebookManager {
     if (useIndexedDB) {
       await indexedDBWrapper.saveNotebook(newNotebook);
       await this.load();
+      // Emit update event so UI can refresh
+      window.dispatchEvent(new CustomEvent('notebooksUpdated', { detail: this.notebooks }));
     } else {
       this.notebooks.push(newNotebook);
       await this.save();
@@ -161,6 +163,7 @@ class NotebookManager {
     if (useIndexedDB) {
       await indexedDBWrapper.saveNotebook(updatedNotebook);
       await this.load();
+      window.dispatchEvent(new CustomEvent('notebooksUpdated', { detail: this.notebooks }));
     } else {
       const index = this.notebooks.findIndex(n => n.id === id);
       this.notebooks[index] = updatedNotebook;
@@ -175,6 +178,7 @@ class NotebookManager {
     if (useIndexedDB) {
       await indexedDBWrapper.deleteNotebook(id);
       await this.load();
+      window.dispatchEvent(new CustomEvent('notebooksUpdated', { detail: this.notebooks }));
     } else {
       await this.load();
       const index = this.notebooks.findIndex(n => n.id === id);
@@ -245,12 +249,16 @@ class NotebookManager {
       await this.delete(notebook.id);
     }
     
+    // Emit update for completeness (delete already emits, but ensures one more broadcast)
+    window.dispatchEvent(new CustomEvent('notebooksUpdated', { detail: this.notebooks }));
     return notebooksToDelete.length;
   }
 
   // Move notebook to different folder
   async moveToFolder(notebookId, newFolderId) {
-    return await this.update(notebookId, { folderId: newFolderId });
+    const updated = await this.update(notebookId, { folderId: newFolderId });
+    window.dispatchEvent(new CustomEvent('notebooksUpdated', { detail: this.notebooks }));
+    return updated;
   }
 
   // Export notebooks as JSON
