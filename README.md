@@ -2,8 +2,6 @@
 
 A modern, intelligent note-taking application with mind-map visualization and automatic keyword linking. Built with React, Vite, and TailwindCSS.
 
-![ThoughtWeaver Hero](./docs/screenshots/hero.png)
-
 ## Features
 
 ### Core Features
@@ -42,8 +40,7 @@ A modern, intelligent note-taking application with mind-map visualization and au
 - **Expand/Collapse All**: One-click expand/collapse for all folders
 - **Sidebar Toggle**: Toggle sidebar with the button or keyboard shortcut (Ctrl+B)
 
-![Sidebar & Organization](./docs/screenshots/sidebar-organization.png)
-![Root Notebooks](./docs/screenshots/notebooks-root.png)
+
 
 ### Intelligence & Analytics
 - **Knowledge Growth Chart**: Visualize your note-taking activity over time
@@ -81,7 +78,7 @@ For detailed theme documentation, custom theme creation, and import instructions
 
 👉 **[View Full Theme Documentation](THEMES.md)** for screenshots and details about each theme.
 
-![Theme Management](./docs/screenshots/settings-themes.png)
+
 
 ## 🧩 Local Intelligence
 
@@ -146,8 +143,8 @@ Your knowledge is yours alone. ThoughtWeaver is built with privacy as a core pri
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd thoughtweaver
+git clone https://github.com/Agent5055/Vibe_Coding_hackathon_2025.git
+cd Vibe_Coding_hackathon_2025
 ```
 
 2. Install dependencies:
@@ -197,7 +194,7 @@ The built application can be deployed to:
 3. Add tags to categorize your notes
 4. Save to automatically extract keywords
 
-![Note Editor](./docs/screenshots/note-editor.png)
+
 
 ### Mind Map View
 
@@ -206,7 +203,7 @@ The built application can be deployed to:
 3. Click nodes to view note details
 4. Use zoom and pan controls to navigate
 
-![Mind Map](./docs/screenshots/mind-map.png)
+
 
 ### Analytics
 
@@ -217,8 +214,7 @@ The built application can be deployed to:
    - Most connected notes
    - Word frequency analysis
 
-![Growth Chart](./docs/screenshots/analytics-growth-chart.png)
-![Topic Heatmap](./docs/screenshots/analytics-heatmap.png)
+
 
 ## Architecture
 
@@ -332,7 +328,7 @@ The following features are planned for future releases:
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT License
 
 ## Support
 
