@@ -120,10 +120,12 @@ const FolderTreeSidebar = ({
   if (isCollapsed) {
     return (
       <div 
-        className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-12 flex items-center justify-center z-30 border-r"
+        className="fixed left-0 w-12 flex items-center justify-center z-30 border-r"
         style={{ 
           backgroundColor: 'var(--bg-secondary)',
-          borderColor: 'var(--border-color)'
+          borderColor: 'var(--border-color)',
+          top: 'var(--sidebar-top, 4rem)',
+          height: 'var(--sidebar-height, calc(100vh - 4rem))'
         }}
       >
         <button
@@ -143,10 +145,12 @@ const FolderTreeSidebar = ({
   return (
     <>
       <div 
-        className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 overflow-y-auto z-30 border-r sidebar-scrollbar"
+        className="fixed left-0 w-72 overflow-y-auto z-30 border-r sidebar-scrollbar"
         style={{ 
           backgroundColor: 'var(--bg-secondary)',
-          borderColor: 'var(--border-color)'
+          borderColor: 'var(--border-color)',
+          top: 'var(--sidebar-top, 4rem)',
+          height: 'var(--sidebar-height, calc(100vh - 4rem))'
         }}
       >
         {/* Header */}

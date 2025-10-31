@@ -544,6 +544,8 @@ button:not(:disabled) {
   --gap-base: 0.5rem;
   --gap-md: 0.75rem;
   --gap-lg: 1rem;
+  --sidebar-top: 3.5rem;
+  --sidebar-height: calc(100vh - 3.5rem);
 }
 
 /* COZY LAYOUT - Comfortable spacing and standard fonts */
@@ -582,6 +584,8 @@ button:not(:disabled) {
   --gap-base: 0.75rem;
   --gap-md: 1rem;
   --gap-lg: 1.5rem;
+  --sidebar-top: 4rem;
+  --sidebar-height: calc(100vh - 4rem);
 }
 
 /* Apply layout variables globally */
