@@ -18,7 +18,8 @@ const FolderTreeSidebar = ({
   const [folders, setFolders] = useState([]);
   const [notebooks, setNotebooks] = useState([]);
   const [expandedFolders, setExpandedFolders] = useState(new Set());
-  const [expandedNotebooks, setExpandedNotebooks] = useState(false);
+  const [notebooksCollapsed, setNotebooksCollapsed] = useState(false);
+  const [foldersCollapsed, setFoldersCollapsed] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -69,45 +70,53 @@ const FolderTreeSidebar = ({
     return folders.filter(f => !f.parentId);
   }, [folders]);
 
-  // Count notes by notebook
-  const noteCounts = useMemo(() => {
-    const counts = {
-      unassigned: 0,
-      notebooks: {},
-      folders: {}
-    };
+  // Count notes and items
+  const counts = useMemo(() => {
+    const notebookCounts = {};
+    const folderCounts = {};
+    const folderItemCounts = {}; // Count of notebooks + subfolders in each folder
 
+    // Count notes per notebook
     notes.forEach(note => {
-      if (!note.notebookIds || note.notebookIds.length === 0) {
-        counts.unassigned++;
-      } else {
+      if (note.notebookIds && note.notebookIds.length > 0) {
         note.notebookIds.forEach(notebookId => {
-          counts.notebooks[notebookId] = (counts.notebooks[notebookId] || 0) + 1;
+          notebookCounts[notebookId] = (notebookCounts[notebookId] || 0) + 1;
         });
       }
     });
 
-    // Calculate folder counts (including nested folders)
-    const calculateFolderCount = (folderId) => {
+    // Calculate folder note counts (including nested folders) and item counts
+    const calculateFolderCounts = (folderId) => {
       const folderNotebooks = notebooks.filter(n => n.folderId === folderId);
-      let count = folderNotebooks.reduce((sum, notebook) => {
-        return sum + (counts.notebooks[notebook.id] || 0);
+      const childFolders = folders.filter(f => f.parentId === folderId);
+      
+      // Item count = direct children (notebooks + subfolders)
+      folderItemCounts[folderId] = folderNotebooks.length + childFolders.length;
+      
+      // Note count = notes in this folder's notebooks + notes in child folders
+      let noteCount = folderNotebooks.reduce((sum, notebook) => {
+        return sum + (notebookCounts[notebook.id] || 0);
       }, 0);
       
-      // Add counts from child folders
-      const childFolders = folders.filter(f => f.parentId === folderId);
       childFolders.forEach(child => {
-        count += calculateFolderCount(child.id);
+        noteCount += calculateFolderCounts(child.id);
       });
       
-      return count;
+      folderCounts[folderId] = noteCount;
+      return noteCount;
     };
 
     folders.forEach(folder => {
-      counts.folders[folder.id] = calculateFolderCount(folder.id);
+      if (!folder.parentId) {
+        calculateFolderCounts(folder.id);
+      }
     });
 
-    return counts;
+    return {
+      notebooks: notebookCounts,
+      folders: folderCounts,
+      folderItems: folderItemCounts
+    };
   }, [notes, folders, notebooks]);
 
   // Toggle folder expansion
@@ -119,6 +128,15 @@ const FolderTreeSidebar = ({
       newExpanded.add(folderId);
     }
     setExpandedFolders(newExpanded);
+  };
+
+  // Expand/collapse all folders
+  const toggleAllFolders = () => {
+    if (expandedFolders.size > 0) {
+      setExpandedFolders(new Set());
+    } else {
+      setExpandedFolders(new Set(folders.map(f => f.id)));
+    }
   };
 
   // Handle context menu
@@ -154,6 +172,7 @@ const FolderTreeSidebar = ({
     const isExpanded = expandedFolders.has(folder.id);
     const folderNotebooks = notebooks.filter(n => n.folderId === folder.id);
     const childFolders = folders.filter(f => f.parentId === folder.id);
+    const itemCount = counts.folderItems[folder.id] || 0;
 
     return (
       <div key={folder.id} className="mb-1" style={{ marginLeft: `${depth * 12}px` }}>
@@ -195,18 +214,31 @@ const FolderTreeSidebar = ({
               {folder.name}
             </span>
           </div>
-          <span 
-            className="text-xs px-2 py-0.5 rounded-full"
-            style={{ 
-              backgroundColor: 'var(--bg-primary)',
-              color: 'var(--text-secondary)'
-            }}
-          >
-            {noteCounts.folders[folder.id] || 0}
-          </span>
+          <div className="flex items-center space-x-2">
+            {depth > 0 && itemCount > 0 && (
+              <span 
+                className="text-xs px-2 py-0.5 rounded-full"
+                style={{ 
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                {itemCount} {itemCount === 1 ? 'item' : 'items'}
+              </span>
+            )}
+            <span 
+              className="text-xs px-2 py-0.5 rounded-full"
+              style={{ 
+                backgroundColor: 'var(--bg-primary)',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              {counts.folders[folder.id] || 0}
+            </span>
+          </div>
         </div>
 
-        {/* Notebooks in Folder */}
+        {/* Notebooks and Subfolders in Folder */}
         {isExpanded && (
           <div className="ml-6 mt-1 space-y-1">
             {folderNotebooks.length === 0 && childFolders.length === 0 ? (
@@ -220,7 +252,7 @@ const FolderTreeSidebar = ({
                     key={notebook.id}
                     onClick={() => handleSelect(notebook, 'notebook')}
                     onContextMenu={(e) => handleContextMenu(e, notebook, 'notebook')}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors duration-200 flex items-center justify-between ${
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
                       selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id 
                         ? 'bg-primary-100 dark:bg-primary-900' 
                         : 'hover:opacity-80'
@@ -231,20 +263,9 @@ const FolderTreeSidebar = ({
                         : 'transparent'
                     }}
                   >
-                    <div className="flex items-center space-x-2">
-                      <span style={{ color: notebook.color }}>{notebook.icon}</span>
-                      <span style={{ color: 'var(--text-primary)' }}>
-                        {notebook.name}
-                      </span>
-                    </div>
-                    <span 
-                      className="text-xs px-2 py-0.5 rounded-full"
-                      style={{ 
-                        backgroundColor: 'var(--bg-primary)',
-                        color: 'var(--text-secondary)'
-                      }}
-                    >
-                      {noteCounts.notebooks[notebook.id] || 0}
+                    <span style={{ color: notebook.color }}>{notebook.icon}</span>
+                    <span style={{ color: 'var(--text-primary)' }}>
+                      {notebook.name}
                     </span>
                   </button>
                 ))}
@@ -254,7 +275,7 @@ const FolderTreeSidebar = ({
               </>
             )}
             
-            {/* Add Notebook Button for this folder */}
+            {/* Add Button for this folder */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -269,7 +290,7 @@ const FolderTreeSidebar = ({
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              <span>Add Notebook</span>
+              <span>Add</span>
             </button>
           </div>
         )}
@@ -354,7 +375,7 @@ const FolderTreeSidebar = ({
           {/* All Notes */}
           <button
             onClick={() => handleSelect({ type: 'all-notes' }, 'all-notes')}
-            className={`w-full text-left px-3 py-2 rounded-lg mb-1 transition-colors duration-200 flex items-center justify-between ${
+            className={`w-full text-left px-3 py-2 rounded-lg mb-3 transition-colors duration-200 flex items-center justify-between ${
               selectedItem?.type === 'all-notes' ? 'bg-primary-100 dark:bg-primary-900' : 'hover:opacity-80'
             }`}
             style={{ 
@@ -377,51 +398,28 @@ const FolderTreeSidebar = ({
             </span>
           </button>
 
-          <button
-            onClick={() => handleSelect({ type: 'unassigned' }, 'unassigned')}
-            className={`w-full text-left px-3 py-2 rounded-lg mb-3 transition-colors duration-200 flex items-center justify-between ${
-              selectedItem?.type === 'unassigned' ? 'bg-primary-100 dark:bg-primary-900' : 'hover:opacity-80'
-            }`}
-            style={{ 
-              backgroundColor: selectedItem?.type === 'unassigned' ? undefined : 'transparent',
-              color: 'var(--text-primary)'
-            }}
-          >
-            <div className="flex items-center space-x-2">
-              <span>📄</span>
-              <span className="font-medium">Unassigned</span>
-            </div>
-            <span 
-              className="text-xs px-2 py-0.5 rounded-full"
-              style={{ 
-                backgroundColor: 'var(--bg-primary)',
-                color: 'var(--text-secondary)'
-              }}
-            >
-              {noteCounts.unassigned}
-            </span>
-          </button>
-
           {/* Notebooks Section */}
           <div className="mt-4 mb-2">
-            <div className="px-3 flex items-center justify-between">
-              <button
-                onClick={() => setExpandedNotebooks(!expandedNotebooks)}
-                className="flex items-center space-x-1 hover:opacity-70"
-              >
-                <svg 
-                  className={`w-4 h-4 transition-transform duration-200 ${expandedNotebooks ? 'rotate-90' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
+            <div className="px-3 flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setNotebooksCollapsed(!notebooksCollapsed)}
+                  className="p-0.5 hover:opacity-70"
                   style={{ color: 'var(--text-secondary)' }}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${notebooksCollapsed ? '' : 'rotate-90'}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
                 <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-                  Notebooks
+                  Notebooks ({rootNotebooks.length})
                 </span>
-              </button>
+              </div>
               <button
                 onClick={() => onCreateNotebook(null)}
                 className="p-1 hover:opacity-70 transition-opacity"
@@ -435,8 +433,8 @@ const FolderTreeSidebar = ({
             </div>
 
             {/* Root Notebooks */}
-            {expandedNotebooks && (
-              <div className="mt-1 space-y-1">
+            {!notebooksCollapsed && (
+              <div className="space-y-1">
                 {rootNotebooks.length === 0 ? (
                   <div className="px-3 py-4 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
                     No root notebooks yet
@@ -447,7 +445,7 @@ const FolderTreeSidebar = ({
                       key={notebook.id}
                       onClick={() => handleSelect(notebook, 'notebook')}
                       onContextMenu={(e) => handleContextMenu(e, notebook, 'notebook')}
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors duration-200 flex items-center justify-between ${
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
                         selectedItem?.type === 'notebook' && selectedItem?.id === notebook.id 
                           ? 'bg-primary-100 dark:bg-primary-900' 
                           : 'hover:opacity-80'
@@ -458,20 +456,9 @@ const FolderTreeSidebar = ({
                           : 'transparent'
                       }}
                     >
-                      <div className="flex items-center space-x-2">
-                        <span style={{ color: notebook.color }}>{notebook.icon}</span>
-                        <span style={{ color: 'var(--text-primary)' }}>
-                          {notebook.name}
-                        </span>
-                      </div>
-                      <span 
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{ 
-                          backgroundColor: 'var(--bg-primary)',
-                          color: 'var(--text-secondary)'
-                        }}
-                      >
-                        {noteCounts.notebooks[notebook.id] || 0}
+                      <span style={{ color: notebook.color }}>{notebook.icon}</span>
+                      <span style={{ color: 'var(--text-primary)' }}>
+                        {notebook.name}
                       </span>
                     </button>
                   ))
@@ -481,30 +468,64 @@ const FolderTreeSidebar = ({
           </div>
 
           {/* Folders Section */}
-          <div className="mt-4 mb-2 px-3 flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-              Folders
-            </span>
-            <button
-              onClick={() => onCreateFolder(null)}
-              className="p-1 hover:opacity-70 transition-opacity"
-              style={{ color: 'var(--text-secondary)' }}
-              title="Create root folder"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Folders List */}
-          {rootFolders.length === 0 ? (
-            <div className="px-3 py-4 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
-              No folders yet. Create one to get started!
+          <div className="mt-4 mb-2">
+            <div className="px-3 flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setFoldersCollapsed(!foldersCollapsed)}
+                  className="p-0.5 hover:opacity-70"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${foldersCollapsed ? '' : 'rotate-90'}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
+                  Folders ({rootFolders.length})
+                </span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <button
+                  onClick={toggleAllFolders}
+                  className="p-1 hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--text-secondary)' }}
+                  title="Expand/collapse all folders"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => onCreateFolder(null)}
+                  className="p-1 hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--text-secondary)' }}
+                  title="Create root folder"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
             </div>
-          ) : (
-            rootFolders.map(folder => renderFolder(folder, 0))
-          )}
+
+            {/* Folders List */}
+            {!foldersCollapsed && (
+              <div>
+                {rootFolders.length === 0 ? (
+                  <div className="px-3 py-4 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    No folders yet. Create one to get started!
+                  </div>
+                ) : (
+                  rootFolders.map(folder => renderFolder(folder, 0))
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
